@@ -1,0 +1,17 @@
+{
+  "name": "decision-board",
+  "version": "0.3.0",
+  "description": "طاولة قرار استشارية: تشخيص قبل الحل، ومعارض معزول بنيوياً، وحَكَم يرتّب الخلاف ولا يذيبه.",
+  "author": {
+    "name": "Muhammet Amin"
+  },
+  "repository": "https://github.com/amen78977/decision-board",
+  "keywords": [
+    "decision-making",
+    "consulting",
+    "arabic",
+    "critical-thinking",
+    "subagents"
+  ],
+  "license": "MIT"
+}
