@@ -9,6 +9,23 @@ fail=0
 err(){ echo "  ❌ $*"; fail=1; }
 ok(){  echo "  ✅ $*"; }
 
+# فحص مسبق — الأخطاء الشائعة تُكتشف قبل إنفاق أي استدعاء
+pre_ok=1
+if ! claude auth status 2>/dev/null | grep -q '"loggedIn": *true'; then
+  echo "❌ الجلسة غير مصادَقة. شغّل أولاً:"
+  echo "     claude auth login"
+  pre_ok=0
+fi
+if ! claude plugin details decision-board 2>/dev/null | grep -q 'Agents (5)'; then
+  echo "❌ البلَغن غير مثبّت أو ناقص. شغّل أولاً:"
+  echo "     claude plugin marketplace add amen78977/decision-board"
+  echo "     claude plugin install decision-board@decision-board"
+  pre_ok=0
+fi
+[ "$pre_ok" -eq 1 ] || { echo; echo "🔴 توقّف قبل التشغيل — لم يُنفق أي استدعاء."; exit 2; }
+echo "✅ الجلسة مصادَقة والبلَغن مثبّت — بدء الاختبار"
+echo
+
 MUSH='الأمر متوازن|هناك مزايا وعيوب|كلاهما وجهة نظر|يعتمد على وجهة النظر'
 
 run(){ # $1=slug  $2=prompt
