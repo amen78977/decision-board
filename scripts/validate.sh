@@ -91,11 +91,22 @@ for c in 01-trivial 02-bad-decision 03-solid-decision 04-hyped-framing 05-journa
 done
 
 echo "── ٩. ج١١ بلا تسريب أسماء الوكلاء ──"
-for f in "$S" "$A" "$C"; do
-  grep -n '📋' "$f" | grep -qi 'opponent\|advocate\|executor\|arbiter\|diagnostician' \
-    && err "$f: سطر 📋 يذكر اسم وكيل — نقض ج١١" || ok "$f: سطر 📋 نظيف"
+for f in "$S" "$A" "$C" README.md docs/ARCHITECTURE.md examples/walkthrough.md; do
+  [ -f "$f" ] || continue
+  grep '📋' "$f" | grep -qiE 'opponent|advocate|executor|arbiter|diagnostician|استُشير: *المؤيد|استُشير: *المعارض' \
+    && err "$f: سطر 📋 يسمّي أدواراً — نقض ج١١" || ok "$f: سطر 📋 نظيف"
 done
 
+echo "── ١٠. جداول النماذج تطابق frontmatter ──"
+for a in diagnostician advocate opponent executor arbiter; do
+  m=$(grep -m1 '^model:' "agents/$a.md" | sed 's/^model:[[:space:]]*//')
+  [ -n "$m" ] || { err "agents/$a.md: حقل model مفقود"; continue; }
+  bad=0
+  for doc in PROTOCOL.md docs/ARCHITECTURE.md; do
+    grep -qE "\`$a\`.*\`$m\`" "$doc" || { err "$doc: $a مذكور بنموذج غير \`$m\`"; bad=1; }
+  done
+  [ "$bad" -eq 0 ] && ok "$a → $m (متطابق في PROTOCOL وARCHITECTURE)"
+done
 echo
 [ "$fail" -eq 0 ] && echo "🟢 نجح الفحص" || echo "🔴 فشل الفحص"
 exit $fail
