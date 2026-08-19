@@ -1,6 +1,6 @@
 {
   "name": "decision-board",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "طاولة قرار استشارية: تشخيص قبل الحل، ومعارض معزول بنيوياً، وحَكَم يرتّب الخلاف ولا يذيبه.",
   "author": {
     "name": "Muhammet Amin"

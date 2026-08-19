@@ -107,6 +107,16 @@ for a in diagnostician advocate opponent executor arbiter; do
   done
   [ "$bad" -eq 0 ] && ok "$a → $m (متطابق في PROTOCOL وARCHITECTURE)"
 done
+echo "── ١١. محفّزات الاستدعاء تغطي الإعلان لا السؤال فقط ──"
+for f in "$S" "$A" "$C"; do
+  hits=0
+  for w in 'سأترك' 'سأستثمر' 'قررت' 'إعلان نية'; do
+    grep -q "$w" "$f" && hits=$((hits+1))
+  done
+  [ "$hits" -ge 2 ] && ok "$f: يغطي الصياغة الخبرية" \
+    || err "$f: محفّزات استفهامية فقط — لن تُستدعى عند «سأترك وظيفتي»"
+done
+
 echo
 [ "$fail" -eq 0 ] && echo "🟢 نجح الفحص" || echo "🔴 فشل الفحص"
 exit $fail
