@@ -143,3 +143,27 @@ claude plugin details decision-board
 يجب أن يظهر `Skills (2)` و`Agents (5)`.
 
 > ⚠️ في وضع `claude -p` غير التفاعلي، **أوامر السلاش تُمرَّر كنص عادي ولا تُفعَّل**. لاختبار `/decide` استخدم جلسة تفاعلية، أو اطلب المهارة بالاسم في `-p`.
+
+---
+
+## فخّ التحديث — الكاش لا يتبع الإصدار
+
+`claude plugin details` يقرأ بيانات الماركت‑بليس، **لا الملفات المحمّلة فعلاً**. فقد يعرض لك الإصدار الجديد بينما الكاش ما زال يحمل القديم — و`claude plugin update` قد يفشل بـ`Plugin not found` بلا أن يصحّح شيئاً.
+
+**تحقّق مما هو محمّل فعلاً:**
+
+```bash
+ls ~/.claude/plugins/cache/decision-board/decision-board/
+```
+
+المجلد الظاهر هو الإصدار العامل. إن خالف ما تتوقعه، أعد التثبيت نظيفاً:
+
+```bash
+claude plugin uninstall decision-board
+rm -rf ~/.claude/plugins/cache/decision-board
+claude plugin marketplace remove decision-board
+claude plugin marketplace add amen78977/decision-board
+claude plugin install decision-board@decision-board
+```
+
+> كلّفنا هذا الفخ دورة اختبار كاملة: نتائج «فاشلة» كانت في الحقيقة تختبر وصفاً قديماً.
