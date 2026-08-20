@@ -34,8 +34,31 @@ const INTERROGATIVE = [
   /(?:torn between|stuck between|can'?t decide|not sure whether)/i,
 ];
 
-// مفردات قرار عامة — تُفعّل فقط في رسالة قصيرة، وبعد تجريد الشيفرة
-const VOCAB = /(?:قرار|خيار|بديل|مقايضة|مفاضلة|trade-?off|dilemma|decision)/;
+/**
+ * قرار **يملكه المستخدم أو يقف أمامه** — لا مجرد ورود الكلمة.
+ *
+ * الطبقة الثالثة كانت `/قرار|خيار|بديل|.../` مجردة، فتُفعّل على أي ذكر
+ * للكلمة: «أعطيك جميع القرارات والصلاحيات» تفويضٌ لا استشارة، و«راجع
+ * قرارات المعمارية» أمر عمل. إيجابية كاذبة رُصدت ميدانياً.
+ *
+ * الإحكام: تُشترط صيغة تملّك أو مواجهة — «قراري» · «أمامي قرار» ·
+ * «بين خيارين». الكلمة وحدها موضوع؛ التملّك هو ما يجعلها قراراً.
+ */
+const VOCAB = new RegExp([
+  'قراري|قرار(?:ي|ات)?\\s+(?:صعب|مصيري|مهم|كبير|حاسم)',
+  '(?:أمامي|امامي|عندي|لديّ|لدي|أواجه|اواجه)\\s+(?:قرار|خيار|خياران|بديل)',
+  'بين\\s+(?:خيارين|بديلين|أمرين|طريقين)',
+  '(?:هذا|هذه)\\s+(?:القرار|الخيار)',
+  '(?:مقايضة|مفاضلة|معضلة)',
+  'my (?:decision|choice|call)|(?:tough|big|hard) (?:call|choice|decision)',
+  'trade-?off|dilemma',
+].join('|'));
+
+/**
+ * توجيه عمل موجَّه إليّ — «قم بـ» · «أعطيك الصلاحية» · «أكمل».
+ * يرد في أي موضع من الرسالة لا في أولها، فلا يكفيه DEV_IMPERATIVE.
+ */
+const WORK_DIRECTIVE = /(?:قم\s+ب|قومي\s+ب|أعطيك|اعطيك|سأعطيك|ساعطيك|أمنحك|امنحك|الصلاحي|صلاحية|فوّضتك|فوضتك|انتهِ\s+من|انته\s+من|أكمل\s+العمل|اكمل\s+العمل|go ahead and|you have (?:full )?(?:permission|authority)|i(?:'m| am) giving you)/i;
 
 // استعلام معرفي — لا قرار
 const EXCLUDE = /(?:أي مكتبة|which library|أي framework|ما الفرق بين|what'?s the difference|اشرح|explain|كيف أكتب|how do i (?:write|implement)|ما معنى|what does .{1,30} mean|عرّف|define)/i;
@@ -85,6 +108,7 @@ function detect(prompt) {
   if (EXCLUDE.test(p)) return null;
   if (DEV_IMPERATIVE.test(p)) return null;
   if (ASSISTANT_REQUEST.test(p)) return null;
+  if (WORK_DIRECTIVE.test(p)) return null;
 
   if (DECLARATIVE.some(r => r.test(p))) return 'إعلان نية';
   if (INTERROGATIVE.some(r => r.test(p))) return 'سؤال عن قرار';

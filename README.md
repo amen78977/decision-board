@@ -7,6 +7,8 @@
 
 `Claude Code` · `Gemini CLI` · `ChatGPT` · `أي دردشة`
 
+[**English**](docs/README.en.md) · [سجل التغييرات](CHANGELOG.md) · [البروتوكول](PROTOCOL.md) · [المعمارية](docs/ARCHITECTURE.md)
+
 </div>
 
 ---
@@ -227,7 +229,8 @@ decision-board/
 ├── scripts/                       ← validate.sh (بنيوي) · smoke.sh (سلوكي)
 ├── hooks/                         ← كاشف القرارات + اختبار وحدته
 ├── evals/                         ← حالات التقييم ومعاييرها
-├── docs/                          ← تركيب · معمارية · Gemini
+├── CHANGELOG.md                   ← سجل التغييرات
+├── docs/                          ← تركيب · معمارية · Gemini · README إنجليزي
 └── examples/walkthrough.md        ← مثال كامل
 ```
 

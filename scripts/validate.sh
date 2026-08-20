@@ -86,7 +86,8 @@ done
 
 echo "── ٨. ج٤ العزل وتناظر التسليح ──"
 # الاسم القديم يجب أن يكون قد اختفى تماماً (حارس انحدار)
-oldname=$(grep -rl 'حزمة_المعارض' --include='*.md' . 2>/dev/null | grep -v '^./PROTOCOL.md$')
+# PROTOCOL وCHANGELOG سجلّان تاريخيان — تسمية الاسم القديم فيهما واجبة لا عيب
+oldname=$(grep -rl 'حزمة_المعارض' --include='*.md' . 2>/dev/null | grep -vE '^\./(PROTOCOL|CHANGELOG)\.md$')
 [ -z "$oldname" ] && ok "الاسم القديم «حزمة_المعارض» أُزيل بالكامل" \
   || err "الاسم القديم باقٍ في: $oldname"
 check "ج٤ الحزمة المحايدة" 'الحزمة_المحايدة' "$S" "$A" \
@@ -112,7 +113,7 @@ grep -q 'فراغات_معلنة' agents/verifier.md   && ok "المُتحقِّ
 grep -q 'ليست وسماً تشريفياً' agents/verifier.md   && ok "المُتحقِّق مقيَّد في عدد الوقائع الحرجة"   || err "agents/verifier.md: بلا سقف لـ«حرجة» — الحقل يُلغي نفسه"
 
 echo "── ١٠. الدفتر يعبر المشاريع ──"
-if grep -rq 'decision-board/MEMORY\.md' --include='*.md' . 2>/dev/null; then
+if grep -rl 'decision-board/MEMORY\.md' --include='*.md' . 2>/dev/null | grep -qvE '^\./(PROTOCOL|CHANGELOG)\.md$'; then
   err "الدفتر ما يزال محلياً (MEMORY.md في المشروع) — يتشظّى ولا يتراكم"
 else
   ok "لا أثر للدفتر المحلي القديم"
@@ -180,6 +181,12 @@ if [ -f hooks/hooks.json ] && [ -f hooks/decision-detector.js ]; then
   grep -q 'ASSISTANT_REQUEST' hooks/decision-detector.js \
     && ok "يستبعد الطلب الموجَّه للمساعد («هل يمكنك…»)" \
     || err "الكاشف بلا استبعاد «هل يمكنك…» — إيجابية كاذبة مرصودة"
+  grep -q 'WORK_DIRECTIVE' hooks/decision-detector.js \
+    && ok "يستبعد التفويض وتوجيه العمل («أعطيك الصلاحية»)" \
+    || err "الكاشف بلا استبعاد التفويض — إيجابية كاذبة مرصودة"
+  grep -q 'أمامي|امامي|عندي' hooks/decision-detector.js \
+    && ok "طبقة المفردات تشترط تملّك القرار لا وروده" \
+    || err "الكاشف: طبقة المفردات فضفاضة — تُفعّل على أي ذكر لكلمة «قرار»"
   if node hooks/detector.test.js >/dev/null 2>&1; then
     ok "اختبار الوحدة: $(node hooks/detector.test.js 2>/dev/null | tail -1)"
   else
