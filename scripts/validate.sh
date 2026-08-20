@@ -117,6 +117,17 @@ for f in "$S" "$A" "$C"; do
     || err "$f: محفّزات استفهامية فقط — لن تُستدعى عند «سأترك وظيفتي»"
 done
 
+echo "── ١٢. كاشف القرارات (hook) ──"
+if [ -f hooks/hooks.json ] && [ -f hooks/decision-detector.js ]; then
+  node -e "JSON.parse(require('fs').readFileSync('hooks/hooks.json','utf8'))" 2>/dev/null && ok "hooks.json صالح" || err "hooks.json تالف"
+  grep -q 'UserPromptSubmit' hooks/hooks.json && ok "UserPromptSubmit مُعلَن" || err "hooks.json: UserPromptSubmit مفقود"
+  grep -q 'CLAUDE_PLUGIN_ROOT' hooks/hooks.json && ok "المسار محمول (CLAUDE_PLUGIN_ROOT)" || err "hooks.json: مسار مطلق غير محمول"
+  if node hooks/detector.test.js >/dev/null 2>&1; then ok "اختبار الوحدة: $(node hooks/detector.test.js 2>/dev/null | tail -1)"; else
+    err "اختبار الوحدة فشل:"; node hooks/detector.test.js 2>&1 | head -5; fi
+else
+  err "hooks/ ناقص — البلَغن يعتمد على تعديل CLAUDE.md الشخصي"
+fi
+
 echo
 [ "$fail" -eq 0 ] && echo "🟢 نجح الفحص" || echo "🔴 فشل الفحص"
 exit $fail
