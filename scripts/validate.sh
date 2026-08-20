@@ -185,6 +185,19 @@ else
   err "hooks/ ناقص — البلَغن يعتمد على تعديل CLAUDE.md الشخصي"
 fi
 
+echo "── ١٧. الاختبار السلوكي (smoke.sh) ──"
+if [ -f scripts/smoke.sh ]; then
+  bash -n scripts/smoke.sh 2>/dev/null && ok "صياغة smoke.sh سليمة" || err "smoke.sh: خطأ صياغة"
+  n=$(grep -c '^run [A-Z]-' scripts/smoke.sh)
+  [ "$n" -ge 6 ] && ok "يغطي $n حالات سلوكية" || err "smoke.sh يغطي $n فقط — طبقة الإثبات بلا اختبار سلوكي"
+  grep -q 'Agents (6)' scripts/smoke.sh && ok "الفحص المسبق يتوقع ٦ وكلاء" || err "smoke.sh: الفحص المسبق ما يزال يتوقع ٥"
+  for fn in numeric_conf flags_unverified no_fabricated_stat; do
+    grep -q "^$fn()" scripts/smoke.sh && ok "مُصحِّح $fn" || err "smoke.sh: مُصحِّح $fn مفقود"
+  done
+else
+  err "scripts/smoke.sh مفقود"
+fi
+
 echo
 [ "$fail" -eq 0 ] && echo "🟢 نجح الفحص" || echo "🔴 فشل الفحص"
 exit $fail
