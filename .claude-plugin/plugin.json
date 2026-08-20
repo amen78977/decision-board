@@ -1,7 +1,7 @@
 {
   "name": "decision-board",
-  "version": "0.4.0",
-  "description": "طاولة قرار استشارية: تشخيص قبل الحل، ومعارض معزول بنيوياً، وحَكَم يرتّب الخلاف ولا يذيبه.",
+  "version": "0.5.0",
+  "description": "طاولة قرار استشارية: تشخيص قبل الحل، وفحص للوقائع، ومؤيد ومعارض معزولان بتسليح متناظر، وحَكَم يرتّب الخلاف ولا يذيبه.",
   "author": {
     "name": "Muhammet Amin"
   },
@@ -11,7 +11,12 @@
     "consulting",
     "arabic",
     "critical-thinking",
-    "subagents"
+    "subagents",
+    "red-team",
+    "premortem",
+    "calibration",
+    "base-rates",
+    "anti-sycophancy"
   ],
   "license": "MIT"
 }

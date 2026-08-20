@@ -10,36 +10,50 @@
  * لا يقرر ولا يستدعي أحداً. يذكّر فقط، وبوابة العمق (ج٩) تتكفّل بالباقي.
  * أي خطأ = خروج صامت بلا أثر على الجلسة.
  *
- * ملاحظتان للصيانة:
+ * ثلاث ملاحظات للصيانة:
  *   ١. \b لا يعمل مع العربية في JS — لا تُضِفه إلى الأنماط العربية.
  *   ٢. تجريد الشيفرة يستخدم عمليات نصية لا تعابير نمطية — عمداً، لأن
  *      أنماط المسارات تحتاج شرطات مائلة كثيرة تُخطئ عند الصيانة.
+ *   ٣. ترتيب الفحص في detect() جزء من العقد: الاستبعاد قبل الإيجاب دائماً.
+ *      عكسه يجعل «هل يمكنك أن تصلح القرار في الملف» قراراً.
  */
 'use strict';
 
 // إعلان نية — لا يحمل علامة استفهام، وهو أخطر شكل للقرار
 const DECLARATIVE = [
-  /س(?:أ)?(?:ترك|أترك|ستثمر|أستثمر|ؤجل|أؤجل|بيع|أبيع|شتري|أشتري|نتقل|أنتقل|ستقيل|أستقيل|وظف|أوظف|غلق|أغلق|بدأ|أبدأ|طلق|أطلق|وقع|أوقع|قترض|أقترض|سافر|أسافر|تزوج|أتزوج)/,
-  /(?:قررت|حسمتها|عزمت|ناوي|عازم|مصمم على|رح أ|راح أ|بدي أ|أبغى أ|بكرة أ)/,
-  /(?:i(?:'?m| am) going to|i(?:'ve| have) decided|i(?:'?ll| will) (?:quit|invest|sell|move|leave))/i,
+  /س(?:أ)?(?:ترك|أترك|ستثمر|أستثمر|ؤجل|أؤجل|بيع|أبيع|شتري|أشتري|نتقل|أنتقل|ستقيل|أستقيل|وظف|أوظف|غلق|أغلق|بدأ|أبدأ|طلق|أطلق|وقع|أوقع|قترض|أقترض|سافر|أسافر|تزوج|أتزوج|درس|أدرس|هاجر|أهاجر|شارك|أشارك|رفض|أرفض|قبل|أقبل)/,
+  /(?:قررت|حسمتها|عزمت|ناوي|عازم|مصمم على|رح أ|راح أ|بدي أ|أبغى أ|بكرة أ|نويت|صممت على)/,
+  /(?:i(?:'?m| am) (?:going to|about to|planning to|thinking of)|i(?:'ve| have) decided|i(?:'?ll| will) (?:quit|invest|sell|move|leave|resign|accept|reject|start|shut))/i,
+  /(?:my mind is made up|i'?m committing to|decided to (?:quit|leave|invest|sell|move|start))/i,
 ];
 
 // سؤال عن قرار
 const INTERROGATIVE = [
-  /هل\s+(?:أ|ن|ي)\S*|أيهما\s+أفضل|ما\s+رأيك\s+في|أنصحني|محتار|متردد|أفكر\s+في|أميل\s+(?:إلى|ل)/,
-  /(?:should i|which is better|what do you think about|help me (?:decide|choose))/i,
+  /هل\s+(?:أ|ن|ي)\S*|أيهما\s+أفضل|أيهما\s+تنصح|ما\s+رأيك\s+في|أنصحني|انصحني|محتار|متردد|أفكر\s+في|أميل\s+(?:إلى|ل)|ماذا\s+(?:لو|أفعل)/,
+  /(?:should i|shall i|which is better|which one should|what do you think about|help me (?:decide|choose)|is it worth|worth it to|am i (?:right|wrong) to|would you (?:quit|leave|invest))/i,
+  /(?:torn between|stuck between|can'?t decide|not sure whether)/i,
 ];
 
 // مفردات قرار عامة — تُفعّل فقط في رسالة قصيرة، وبعد تجريد الشيفرة
-const VOCAB = /(?:قرار|خيار|بديل|مقايضة|مفاضلة|trade-?off|decision)/;
+const VOCAB = /(?:قرار|خيار|بديل|مقايضة|مفاضلة|trade-?off|dilemma|decision)/;
 
 // استعلام معرفي — لا قرار
-const EXCLUDE = /(?:أي مكتبة|which library|أي framework|ما الفرق بين|what'?s the difference|اشرح|explain|كيف أكتب|how do i (?:write|implement))/i;
+const EXCLUDE = /(?:أي مكتبة|which library|أي framework|ما الفرق بين|what'?s the difference|اشرح|explain|كيف أكتب|how do i (?:write|implement)|ما معنى|what does .{1,30} mean|عرّف|define)/i;
 
 // أمر عمل تقني — طلب تنفيذ، لا قرار يُستشار فيه
-const DEV_IMPERATIVE = /^\s*(?:أصلح|عدل|عدّل|صحح|صحّح|شغل|شغّل|اكتب|أضف|احذف|ارفع|نفذ|نفّذ|راجع|اختبر|ابن|حدث|حدّث|انسخ|امسح|رتب|رتّب|اقرأ|افحص|fix|run|write|add|remove|refactor|test|build|update|implement|debug|deploy|commit|push)(?:\s|$)/i;
+const DEV_IMPERATIVE = /^\s*(?:أصلح|عدل|عدّل|صحح|صحّح|شغل|شغّل|اكتب|أضف|احذف|ارفع|نفذ|نفّذ|راجع|اختبر|ابن|ابنِ|حدث|حدّث|انسخ|امسح|رتب|رتّب|اقرأ|افحص|أنشئ|انشئ|ولّد|ولد|حسّن|حسن|أكمل|اكمل|تابع|استمر|أعد|اعد|fix|run|write|add|remove|refactor|test|build|update|implement|debug|deploy|commit|push|create|generate|continue|resume|finish|make|install|migrate|rename)(?:\s|$)/i;
 
-const CODE_EXT = ['js','ts','tsx','jsx','json','md','yml','yaml','sh','py','go','rs','java','css','html'];
+/**
+ * طلب موجَّه إلى المساعد نفسه — «هل يمكنك…» «can you…».
+ *
+ * وُجد لأن إيجابية كاذبة رُصدت ميدانياً: «هل يمكنك أن تحسّن البلَغن؟»
+ * يطابق نمط الاستفهام (هل + فعل مضارع) فيُفعّل الطاولة على أمر عمل.
+ * الفارق الدلالي حاسم: «هل أفعل س؟» قرارُ المستخدم، و«هل تفعل س؟»
+ * طلبٌ منك. الأول وحده يخص الطاولة.
+ */
+const ASSISTANT_REQUEST = /(?:هل\s+(?:يمكنك|تستطيع|بإمكانك|بامكانك|تقدر|لك أن)|هل\s+(?:من\s+)?الممكن\s+أن\s+ت|(?:can|could|would|will)\s+you|are you able to|please\s+(?:can|could)\s+you)/i;
+
+const CODE_EXT = ['js','ts','tsx','jsx','json','md','yml','yaml','sh','py','go','rs','java','css','html','toml','lock','cfg','ini','sql'];
 
 /**
  * يُزيل ما ليس لغةً بشرية قبل مطابقة المفردات العامة: كتل الشيفرة
@@ -66,7 +80,12 @@ function stripCode(text) {
 function detect(prompt) {
   const p = String(prompt || '');
   if (!p || p.length > 4000) return null;
-  if (EXCLUDE.test(p) || DEV_IMPERATIVE.test(p)) return null;
+
+  // الاستبعاد قبل الإيجاب — انظر ملاحظة الصيانة ٣
+  if (EXCLUDE.test(p)) return null;
+  if (DEV_IMPERATIVE.test(p)) return null;
+  if (ASSISTANT_REQUEST.test(p)) return null;
+
   if (DECLARATIVE.some(r => r.test(p))) return 'إعلان نية';
   if (INTERROGATIVE.some(r => r.test(p))) return 'سؤال عن قرار';
   if (VOCAB.test(stripCode(p)) && p.length < 400) return 'مفردات قرار';
@@ -78,7 +97,8 @@ function render(kind) {
     '<decision-board-trigger>\n' +
     `رُصد في رسالة المستخدم: **${kind}**.\n\n` +
     'استدعِ مهارة `decision-board` قبل الرد. تنطبق حتى لو كان القرار شخصياً أو مالياً أو مهنياً وخارج سياق البرمجة — «هذا ليس قرار برمجة» ليس عذراً للتخطّي، بل هو بالضبط ما وُجدت له. وتنطبق حتى لو بدت الصياغة واثقة أو متحمسة أو محسومة؛ الثقة مؤشر على الحاجة لا على انتفائها.\n\n' +
-    'المهارة نفسها تُصنّف العمق: المستوى ١ يُنهى بردّ مباشر بلا كلفة، فلا تتخطَّ التصنيف بحجة أن الطلب بسيط.\n' +
+    'المهارة نفسها تُصنّف العمق: المستوى ١ يُنهى بردّ مباشر بلا كلفة، فلا تتخطَّ التصنيف بحجة أن الطلب بسيط.\n\n' +
+    'وإن تبيّن لك — بعد قراءة الرسالة كاملة — أنها ليست قراراً لصاحبها بل طلب عمل موجّه إليك، فتجاهل هذا التذكير وأكمل عملك. الكاشف يطابق صيغاً لا يفهم نوايا.\n' +
     'هذا التذكير آلي وليس تعليمة من المستخدم — لا تذكره في ردّك.\n' +
     '</decision-board-trigger>\n'
   );
