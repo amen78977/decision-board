@@ -107,6 +107,10 @@ for lens in 'العدسة_الاقتصادية' 'العدسة_البشرية_ا�
   grep -q "$lens" agents/opponent.md && ok "عدسة $lens" || err "agents/opponent.md: $lens مفقودة"
 done
 
+# المُتحقِّق: الغياب ليس واقعة · و«حرجة» ليست وسماً تشريفياً (رُصد بالاختبار الميداني)
+grep -q 'فراغات_معلنة' agents/verifier.md   && ok "المُتحقِّق يفصل الغيابات عن الوقائع"   || err "agents/verifier.md: الغيابات تُوسَم كوقائع فيضيع الادعاء الخطر"
+grep -q 'ليست وسماً تشريفياً' agents/verifier.md   && ok "المُتحقِّق مقيَّد في عدد الوقائع الحرجة"   || err "agents/verifier.md: بلا سقف لـ«حرجة» — الحقل يُلغي نفسه"
+
 echo "── ١٠. الدفتر يعبر المشاريع ──"
 if grep -rq 'decision-board/MEMORY\.md' --include='*.md' . 2>/dev/null; then
   err "الدفتر ما يزال محلياً (MEMORY.md في المشروع) — يتشظّى ولا يتراكم"
