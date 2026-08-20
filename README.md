@@ -45,7 +45,7 @@
 
 **أي دردشة أخرى** — الصق [`standalone/CHAT.md`](standalone/CHAT.md)
 
-كل الطرق في [`docs/INSTALL.md`](docs/INSTALL.md) · Gemini CLI في [`docs/GEMINI.md`](docs/GEMINI.md)
+كل الطرق في [`docs/INSTALL.md`](docs/INSTALL.md) · Gemini CLI في [`docs/GEMINI.md`](docs/GEMINI.md) · اشتقاق نسختك في [`docs/FORK.md`](docs/FORK.md)
 
 ---
 
@@ -230,7 +230,7 @@ decision-board/
 ├── hooks/                         ← كاشف القرارات + اختبار وحدته
 ├── evals/                         ← حالات التقييم ومعاييرها
 ├── CHANGELOG.md                   ← سجل التغييرات
-├── docs/                          ← تركيب · معمارية · Gemini · README إنجليزي
+├── docs/                          ← تركيب · معمارية · اشتقاق · Gemini · README إنجليزي
 └── examples/walkthrough.md        ← مثال كامل
 ```
 
