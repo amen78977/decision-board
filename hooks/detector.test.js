@@ -25,6 +25,12 @@ const CASES = [
   ['شغّل الاختبارات وارفع النتيجة', null],
   ['أصلح هذا الخطأ في الدالة', null],
   ['how do i write a test for this', null],
+  // إيجابيات كاذبة رُصدت ميدانياً — اسم ملف يحوي decision، وأوامر عمل تقنية
+  ['أصلح الخطأ في hooks/decision-detector.js', null],
+  ['راجع evals/03-solid-decision/prompt.md', null],
+  ['fix the decision detector', null],
+  ['شغّل scripts/validate.sh', null],
+  ['أضف خيار جديد للدالة', null],
   ['', null],
 ];
 
