@@ -25,6 +25,10 @@ const DECLARATIVE = [
   /(?:قررت|حسمتها|عزمت|ناوي|عازم|مصمم على|رح أ|راح أ|بدي أ|أبغى أ|بكرة أ|نويت|صممت على)/,
   /(?:i(?:'?m| am) (?:going to|about to|planning to|thinking of)|i(?:'ve| have) decided|i(?:'?ll| will) (?:quit|invest|sell|move|leave|resign|accept|reject|start|shut))/i,
   /(?:my mind is made up|i'?m committing to|decided to (?:quit|leave|invest|sell|move|start))/i,
+  // الإعلان بصيغة المضارع المستمر — أشيع صورة للقرار بالإنجليزية، وأخطرها لأنها تصف
+  // فعلاً جارياً لا نيةً مستقبلية. الأفعال محصورة عمداً بمفعول غير تقني:
+  // «I'm moving to Berlin» قرار، و«I'm moving this file» ليس كذلك.
+  /i(?:'?m| am) (?:quitting|resigning|dropping out|going full[- ]?time|relocating|hiring|firing (?:my|the)|investing (?:in|my)|buying (?:a|the) (?:house|car|company|business|apartment|flat)|selling (?:my|the) (?:company|business|house|car|stake|shares|apartment|flat)|leaving (?:my|the|this) (?:job|company|role|position|country|team)|moving (?:to|abroad|back|out|overseas|in with)|taking (?:the|this|that) (?:job|offer|role|position|deal)|turning down (?:the|this|their)|accepting (?:the|this|their) (?:job|offer|role|position)|shutting down (?:my|the) (?:company|business|startup|product))/i,
 ];
 
 // سؤال عن قرار
@@ -74,6 +78,12 @@ const DEV_IMPERATIVE = /^\s*(?:أصلح|عدل|عدّل|صحح|صحّح|شغل|�
  * الفارق الدلالي حاسم: «هل أفعل س؟» قرارُ المستخدم، و«هل تفعل س؟»
  * طلبٌ منك. الأول وحده يخص الطاولة.
  */
+// نية عمل تقني بصيغة الإخبار: «سأضيف اختباراً» ليست قراراً بل إعلان خطوة تنفيذية.
+// DEV_IMPERATIVE يمسك الأمر في أول السطر؛ هذا يمسك الإخبار عن النية أينما ورد.
+const DEV_VERBS = 'fix|add|remove|delete|refactor|test|build|update|upgrade|implement|debug|deploy|commit|push|pull|merge|rebase|revert|create|generate|write|run|install|migrate|rename|bump|patch|clean|split|extract|document|review|check|scaffold|wire|hook';
+const DEV_INTENT = new RegExp(
+  "(?:i(?:'?m| am) (?:going to|about to|planning to|thinking of) |i(?:'?ll| will) |سأ|سوف أ)(?:" + DEV_VERBS + ")(?![a-z])", 'i');
+
 const ASSISTANT_REQUEST = /(?:هل\s+(?:يمكنك|تستطيع|بإمكانك|بامكانك|تقدر|لك أن)|هل\s+(?:من\s+)?الممكن\s+أن\s+ت|(?:can|could|would|will)\s+you|are you able to|please\s+(?:can|could)\s+you)/i;
 
 const CODE_EXT = ['js','ts','tsx','jsx','json','md','yml','yaml','sh','py','go','rs','java','css','html','toml','lock','cfg','ini','sql'];
@@ -109,6 +119,7 @@ function detect(prompt) {
   if (DEV_IMPERATIVE.test(p)) return null;
   if (ASSISTANT_REQUEST.test(p)) return null;
   if (WORK_DIRECTIVE.test(p)) return null;
+  if (DEV_INTENT.test(p)) return null;
 
   if (DECLARATIVE.some(r => r.test(p))) return 'إعلان نية';
   if (INTERROGATIVE.some(r => r.test(p))) return 'سؤال عن قرار';

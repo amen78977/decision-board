@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📖 Read the protocol first
+    url: https://github.com/amen78977/decision-board/blob/main/PROTOCOL.md
+    about: "Every rule, why it exists, and what it costs. Most 'why does it do that' questions are answered here — often deliberately."
+  - name: 🔬 See a full real session
+    url: https://github.com/amen78977/decision-board/blob/main/docs/DEMO.md
+    about: "All six agents, unedited, including the arbiter critiquing its own ranking."
+  - name: 🍴 Adapt it to your own rules or language
+    url: https://github.com/amen78977/decision-board/blob/main/docs/FORK.md
+    about: "Fork guide — including which three rules you should not change, and why."

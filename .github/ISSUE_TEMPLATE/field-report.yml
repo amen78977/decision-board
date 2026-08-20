@@ -1,0 +1,86 @@
+name: "🔬 Field report — it got something wrong"
+description: "You ran it on a real decision and the output was wrong, flattering, over-eager, or absent. This is the most useful issue you can open."
+title: "[field] "
+labels: ["field-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Three of the last four fixes in this project came from a run, not a code review.**
+        Reading catches what breaks a rule. Running catches what the rule never imagined.
+
+        You do not need to know what went wrong internally — just what you saw.
+        العربية مرحّب بها تماماً كالإنجليزية.
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What happened
+      options:
+        - It agreed with me when it shouldn't have (flattery)
+        - It objected when the plan was actually sound (manufactured objection)
+        - It didn't trigger on a real decision (missed)
+        - It triggered on something that wasn't a decision (false positive)
+        - It invented a number / statistic
+        - It hedged instead of ranking ("there are pros and cons")
+        - It ran the full board on a trivial question (depth gate)
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: input
+    attributes:
+      label: What you typed
+      description: "Redact anything private — replace details with placeholders. The *shape* of the sentence is what matters, not your actual situation."
+      placeholder: "I'm quitting my job to work on my project. I have 2 months of savings."
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: What it answered
+      description: "Paste it. The `📋` / `🎯` / `🔍` lines are especially useful — or say if they were missing."
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+      description: "One sentence is enough."
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: "Run `ls ~/.claude/plugins/cache/decision-board/decision-board/` — the folder name is the version actually loaded."
+      placeholder: "0.6.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where
+      options:
+        - Claude Code (plugin)
+        - standalone/CHAT.md pasted into a chat
+        - standalone/AGENT.md
+        - Gemini CLI
+        - Other
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: restarted
+    attributes:
+      label: One check first
+      description: "A session opened *before* you installed or updated runs the old version — see docs/INSTALL.md."
+      options:
+        - label: "I started a fresh session after installing/updating"
+          required: false

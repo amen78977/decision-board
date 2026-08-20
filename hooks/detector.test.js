@@ -18,6 +18,17 @@ const CASES = [
   ["I'm planning to leave the company", 'إعلان نية'],
   ['My mind is made up about the move', 'إعلان نية'],
 
+  // ═══ 0.6.0 — الإعلان بالمضارع المستمر: أشيع صورة للقرار بالإنجليزية.
+  // «I'm quitting» لا يحمل نية مستقبلية بل فعلاً جارياً — وهذا ما جعله يفلت حتى 0.6.0.
+  ['I am quitting my job to work on my project full time', 'إعلان نية'],
+  ["I'm resigning at the end of the month", 'إعلان نية'],
+  ["I'm leaving my job for a startup", 'إعلان نية'],
+  ["I'm moving to Berlin next month", 'إعلان نية'],
+  ["I'm taking the offer", 'إعلان نية'],
+  ["I'm selling my company", 'إعلان نية'],
+  ["I'm dropping out to build this", 'إعلان نية'],
+  ["I'm going full-time on my side project", 'إعلان نية'],
+
   // ═══ يجب أن تُفعّل — سؤال عن قرار
   ['هل أشرب قهوة أم شاي؟', 'سؤال عن قرار'],
   ['أيهما أفضل، أ أم ب؟', 'سؤال عن قرار'],
@@ -34,6 +45,15 @@ const CASES = [
   ['اشرح لي كيف يعمل useEffect', null],
   ['ما الفرق بين map و forEach', null],
   ['how do i write a test for this', null],
+
+  // ═══ 0.6.0 — نية عمل تقني بصيغة الإخبار: خطوة تنفيذية لا قرار حياة.
+  // «I'm moving this file» تشترك في الفعل مع «I'm moving to Berlin» وتختلف في المفعول.
+  ["I'm moving this file to src/", null],
+  ['I am starting the dev server', null],
+  ["I'm going to add a test for this", null],
+  ["I'll refactor the parser after lunch", null],
+  ['سأضيف اختباراً لهذه الدالة', null],
+  ['سوف أنشر التحديث بعد المراجعة', null],
   ['ما معنى الفئة المرجعية', null],
 
   // ═══ يجب ألا تُفعّل — أمر عمل تقني

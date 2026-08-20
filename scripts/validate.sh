@@ -209,6 +209,37 @@ else
   err "scripts/smoke.sh مفقود"
 fi
 
+echo "── ١٧ب. حراس الكاشف الميدانية ──"
+grep -q 'quitting' hooks/decision-detector.js && ok "يمسك الإعلان بالمضارع المستمر" || err "الكاشف: صيغة «I am quitting» تفلت — أشيع صورة للقرار بالإنجليزية"
+grep -q 'DEV_INTENT' hooks/decision-detector.js && ok "يستبعد نية العمل التقني" || err "الكاشف: «سأضيف اختباراً» ستُفعّل الطاولة"
+grep -q 'DEV_INTENT.test' hooks/decision-detector.js && ok "DEV_INTENT موصول بسلسلة الاستبعاد" || err "DEV_INTENT معرَّف وغير مستدعى — حارس ميت"
+n=$(grep -c "إعلان نية'\]" hooks/detector.test.js)
+[ "$n" -ge 20 ] && ok "$n حالة إعلان نية مغطاة" || err "تغطية إعلان النية $n فقط"
+
+echo "── ١٨. طبقة التسليم (ج١٦) ──"
+grep -q 'طبقة التسليم' PROTOCOL.md && ok "PROTOCOL: طبقة التسليم معلنة" || err "PROTOCOL: طبقة التسليم مفقودة"
+grep -q 'ج١٦' PROTOCOL.md && ok "PROTOCOL: ج١٦ موجودة" || err "PROTOCOL: ج١٦ مفقودة"
+for a in $AGENTS; do
+  grep -q 'ج١٦' "agents/$a.md" && ok "$a: ج١٦ منشورة" || err "agents/$a.md: ج١٦ لم تُنشر — قاعدة تسقط بصمت"
+done
+grep -q 'أنت من يحسم اللغة' agents/diagnostician.md && ok "المشخِّص يحسم اللغة" || err "diagnostician: لا يحسم اللغة — الحزمة قد تصل بلغة غير لغة المستخدم"
+grep -q 'ج١٦' "$S" && ok "SKILL: ج١٦ منشورة" || err "SKILL.md: ج١٦ لم تُنشر"
+grep -q 'لغة المخرَج تتبع صاحب القرار' "$A" && ok "AGENT: قاعدة اللغة منشورة" || err "standalone/AGENT.md: قاعدة اللغة مفقودة"
+grep -q 'لغتي هي لغة ردّك' "$C" && ok "CHAT: قاعدة اللغة منشورة" || err "standalone/CHAT.md: قاعدة اللغة مفقودة"
+en_forks=$(ls agents/*.en.md 2>/dev/null | wc -l)
+[ "$en_forks" -eq 0 ] && ok "لا تفرّع لغوي للوكلاء" || err "وُجد $en_forks من agents/*.en.md — ج١٦/مشتقة تمنع النسخة الموازية"
+
+echo "── ١٩. الواجهة ثنائية اللغة ──"
+[ -f README.ar.md ] && ok "README.ar.md موجود" || err "README.ar.md مفقود"
+grep -q "Your AI agrees with you" README.md && ok "README الجذر إنجليزي بخُطّافه" || err "README.md: الجذر ليس إنجليزياً — السقف اللغوي عاد"
+grep -q 'README.ar.md' README.md && ok "الجذر يحيل إلى العربية" || err "README.md: لا إحالة إلى README.ar.md"
+grep -q '(README.md)' README.ar.md && ok "العربية تحيل إلى الجذر" || err "README.ar.md: لا إحالة إلى الجذر"
+! grep -rl 'docs/README.en.md' --include='*.md' . 2>/dev/null | grep -qv 'CHANGELOG.md' && ok "لا إحالات حيّة لملف إنجليزي محذوف" || err "ما زالت هناك إحالة حيّة إلى docs/README.en.md المحذوف (CHANGELOG سجلّ تاريخي ومستثنى)"
+[ -f docs/DEMO.md ] && ok "docs/DEMO.md موجود" || err "docs/DEMO.md مفقود — لا دليل تشغيل منشور"
+grep -q '📋 خضع' docs/DEMO.md && ok "DEMO يعرض سطر 📋 حقيقياً" || err "docs/DEMO.md: لا يعرض سطر 📋"
+grep -q 'DEMO.md' README.md && grep -q 'DEMO.md' README.ar.md && ok "الواجهتان تحيلان إلى الجلسة الحقيقية" || err "README: إحالة DEMO.md مفقودة في إحدى اللغتين"
+[ -f .github/ISSUE_TEMPLATE/field-report.yml ] && ok "قالب تقرير الميدان موجود" || err "قالب تقرير الميدان مفقود — لا قناة للعيوب الميدانية"
+
 echo
 [ "$fail" -eq 0 ] && echo "🟢 نجح الفحص" || echo "🔴 فشل الفحص"
 exit $fail
