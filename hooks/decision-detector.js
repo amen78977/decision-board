@@ -28,12 +28,12 @@ const DECLARATIVE = [
   // الإعلان بصيغة المضارع المستمر — أشيع صورة للقرار بالإنجليزية، وأخطرها لأنها تصف
   // فعلاً جارياً لا نيةً مستقبلية. الأفعال محصورة عمداً بمفعول غير تقني:
   // «I'm moving to Berlin» قرار، و«I'm moving this file» ليس كذلك.
-  /i(?:'?m| am) (?:quitting|resigning|dropping out|going full[- ]?time|relocating|hiring|firing (?:my|the)|investing (?:in|my)|buying (?:a|the) (?:house|car|company|business|apartment|flat)|selling (?:my|the) (?:company|business|house|car|stake|shares|apartment|flat)|leaving (?:my|the|this) (?:job|company|role|position|country|team)|moving (?:to|abroad|back|out|overseas|in with)|taking (?:the|this|that) (?:job|offer|role|position|deal)|turning down (?:the|this|their)|accepting (?:the|this|their) (?:job|offer|role|position)|shutting down (?:my|the) (?:company|business|startup|product))/i,
+  /i(?:'?m| am) (?:quitting|resigning|dropping out|going full[- ]?time|relocating|starting (?:a|the) (?:company|business|startup|venture|project)|hiring|firing (?:my|the)|investing (?:in|my)|buying (?:a|the) (?:house|car|company|business|apartment|flat)|selling (?:my|the) (?:company|business|house|car|stake|shares|apartment|flat)|leaving (?:my|the|this) (?:job|company|role|position|country|team)|moving (?:to|abroad|back|out|overseas|in with)|taking (?:the|this|that) (?:job|offer|role|position|deal)|turning down (?:the|this|their)|accepting (?:the|this|their) (?:job|offer|role|position)|shutting down (?:my|the) (?:company|business|startup|product))/i,
 ];
 
 // سؤال عن قرار
 const INTERROGATIVE = [
-  /هل\s+(?:أ|ن|ي)\S*|أيهما\s+أفضل|أيهما\s+تنصح|ما\s+رأيك\s+في|أنصحني|انصحني|محتار|متردد|أفكر\s+في|أميل\s+(?:إلى|ل)|ماذا\s+(?:لو|أفعل)/,
+  /هل\s+(?:أ|ا|إ|آ|ن|ي)\S*|أيهما\s+أفضل|ايهما\s+افضل|أيهما\s+تنصح|ايهما\s+تنصح|ما\s+رأيك\s+في|أنصحني|انصحني|محتار|متردد|أفكر\s+في|افكر\s+في|أميل\s+(?:إلى|الى|ل)|اميل\s+(?:الى|ل)|ماذا\s+(?:لو|أفعل|افعل)/,
   /(?:should i|shall i|which is better|which one should|what do you think about|help me (?:decide|choose)|is it worth|worth it to|am i (?:right|wrong) to|would you (?:quit|leave|invest))/i,
   /(?:torn between|stuck between|can'?t decide|not sure whether)/i,
 ];
@@ -65,7 +65,7 @@ const VOCAB = new RegExp([
 const WORK_DIRECTIVE = /(?:قم\s+ب|قومي\s+ب|أعطيك|اعطيك|سأعطيك|ساعطيك|أمنحك|امنحك|الصلاحي|صلاحية|فوّضتك|فوضتك|انتهِ\s+من|انته\s+من|أكمل\s+العمل|اكمل\s+العمل|go ahead and|you have (?:full )?(?:permission|authority)|i(?:'m| am) giving you)/i;
 
 // استعلام معرفي — لا قرار
-const EXCLUDE = /(?:أي مكتبة|which library|أي framework|ما الفرق بين|what'?s the difference|اشرح|explain|كيف أكتب|how do i (?:write|implement)|ما معنى|what does .{1,30} mean|عرّف|define)/i;
+const EXCLUDE = /(?:أي مكتبة|which library|أي framework|ما الفرق بين|what'?s the difference|اشرح|explain|كيف أكتب|how do i (?:write|implement)|ما معنى|what does .{1,30} mean|(?:^|\s)عرّف(?:\s|$)|(?:^|\s)define(?:\s|$))/i;
 
 // أمر عمل تقني — طلب تنفيذ، لا قرار يُستشار فيه
 const DEV_IMPERATIVE = /^\s*(?:أصلح|عدل|عدّل|صحح|صحّح|شغل|شغّل|اكتب|أضف|احذف|ارفع|نفذ|نفّذ|راجع|اختبر|ابن|ابنِ|حدث|حدّث|انسخ|امسح|رتب|رتّب|اقرأ|افحص|أنشئ|انشئ|ولّد|ولد|حسّن|حسن|أكمل|اكمل|تابع|استمر|أعد|اعد|fix|run|write|add|remove|refactor|test|build|update|implement|debug|deploy|commit|push|create|generate|continue|resume|finish|make|install|migrate|rename)(?:\s|$)/i;
@@ -85,6 +85,18 @@ const DEV_INTENT = new RegExp(
   "(?:i(?:'?m| am) (?:going to|about to|planning to|thinking of) |i(?:'?ll| will) |سأ|سوف أ)(?:" + DEV_VERBS + ")(?![a-z])", 'i');
 
 const ASSISTANT_REQUEST = /(?:هل\s+(?:يمكنك|تستطيع|بإمكانك|بامكانك|تقدر|لك أن)|هل\s+(?:من\s+)?الممكن\s+أن\s+ت|(?:can|could|would|will)\s+you|are you able to|please\s+(?:can|could)\s+you)/i;
+
+// طلب قرار موجّه إلى المساعد يظل قراراً إذا كان المطلوب هو المساعدة على الحسم،
+// لا تنفيذ عمل نيابة عن المستخدم. الطلبات التقنية تُستبعد أدناه.
+const ASSISTANT_DECISION_REQUEST = /(?:can|could|would)\s+you\s+(?:help\s+me\s+)?(?:decide|choose)|(?:هل\s+(?:يمكنك|تستطيع|بإمكانك|بامكانك|تقدر|لك أن)\s+)(?:أن\s+)?(?:تساعدني\s+(?:في\s+)?|تقرر|تختار|تحسم)/i;
+
+// قرارات جماعية أو صياغة تختزل القرار إلى مفاضلة صريحة.
+const TEAM_DECISION = /(?:we|the team|our team)\s+(?:need to|have to|must)\s+decide\s+(?:whether|between)|(?:the|this)\s+decision\s+(?:is|comes down to)\s+(?:whether|between)|(?:we|our team|the team)\s+(?:need to|have to|must)\s+(?:make a decision|choose)\b|(?:نحن|فريقنا|الفريق)\s+(?:نحتاج|علينا|يجب)\s+(?:أن\s+)?(?:نقرر|نحسم|نختار)|(?:هذا|ذلك)\s+القرار\s+(?:هو|ينحصر)\s+(?:أن|بين)/i;
+
+// بعض الأفعال تبدو قرارية، لكنها إعلان تنفيذ تقني. لا تُستبعد إلا إذا ظهر
+// سياق تقني واضح، حتى لا نحجب «سأنتقل» أو «قررت أن أبدأ مشروعاً».
+const TECHNICAL_CONTEXT = /(?:file|code|codebase|function|parser|migration|production|server|library|framework|test|branch|database|api|repository|repo|deployment|src\/|react|typescript|javascript|python|node|frontend|backend|dev|الخوارزم|الكود|الشفرة|الدالة|الاختبار|المكتبة|الإطار|الترحيل|الإصدار|الملف|الخادم|قاعدة\s+البيانات|واجهة\s+برمجة)/i;
+const TECHNICAL_ACTION = /(?:(?:(?:i(?:'?ve| have)\s+decided\s+to|i(?:'?ll| will)|i(?:'?m| am)\s+(?:going\s+to|about\s+to|planning\s+to))\s+|سأ|سوف\s+أ)(?:fix|add|remove|delete|refactor|test|build|update|upgrade|implement|debug|deploy|commit|push|pull|merge|rebase|revert|create|generate|write|run|install|migrate|rename|bump|patch|clean|split|extract|document|review|check|scaffold|wire|hook|move|ship|release|promote|start|study|درس|بدأ|أبدأ|أدرس|أنشئ|أضيف|أحذف|أعدّل|أعدل|أراجع|أختبر|أشغّل|اشغل|أنشر|أرحّل|ارحل|أكتب|أبني|أحدّث|احدث|أصلح)(?![a-z]))/i;
 
 const CODE_EXT = ['js','ts','tsx','jsx','json','md','yml','yaml','sh','py','go','rs','java','css','html','toml','lock','cfg','ini','sql'];
 
@@ -110,20 +122,62 @@ function stripCode(text) {
     .join(' ');
 }
 
+function normalizeArabic(text) {
+  return String(text)
+    .normalize('NFKC')
+    .replace(/[\u064B-\u065F\u0670]/g, '')
+    .replace(/[إأآٱ]/g, 'ا')
+    .replace(/ى/g, 'ي')
+    .replace(/ـ/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function normalizePattern(pattern) {
+  return new RegExp(normalizeArabic(pattern.source), pattern.flags.replace('g', ''));
+}
+
+function matches(pattern, text) {
+  pattern.lastIndex = 0;
+  return pattern.test(text);
+}
+
+const NORMALIZED_PATTERN_CACHE = new WeakMap();
+
+function matchesAny(patterns, texts) {
+  return patterns.some(pattern => {
+    let normalizedPattern = NORMALIZED_PATTERN_CACHE.get(pattern);
+    if (!normalizedPattern) {
+      normalizedPattern = normalizePattern(pattern);
+      NORMALIZED_PATTERN_CACHE.set(pattern, normalizedPattern);
+    }
+    return texts.some(text => matches(pattern, text) || matches(normalizedPattern, text));
+  });
+}
+
 function detect(prompt) {
   const p = String(prompt || '');
   if (!p || p.length > 4000) return null;
 
-  // الاستبعاد قبل الإيجاب — انظر ملاحظة الصيانة ٣
-  if (EXCLUDE.test(p)) return null;
-  if (DEV_IMPERATIVE.test(p)) return null;
-  if (ASSISTANT_REQUEST.test(p)) return null;
-  if (WORK_DIRECTIVE.test(p)) return null;
-  if (DEV_INTENT.test(p)) return null;
+  const texts = [p, normalizeArabic(p)];
+  const strippedTexts = texts.map(stripCode);
+  const assistantDecision = matchesAny([ASSISTANT_DECISION_REQUEST], texts);
+  const technicalContext = matchesAny([TECHNICAL_CONTEXT], texts);
+  const technicalAction = matchesAny([TECHNICAL_ACTION], texts);
 
-  if (DECLARATIVE.some(r => r.test(p))) return 'إعلان نية';
-  if (INTERROGATIVE.some(r => r.test(p))) return 'سؤال عن قرار';
-  if (VOCAB.test(stripCode(p)) && p.length < 400) return 'مفردات قرار';
+  // الاستبعاد قبل الإيجاب — انظر ملاحظة الصيانة ٣
+  if (matchesAny([EXCLUDE], texts)) return null;
+  if (matchesAny([DEV_IMPERATIVE], texts)) return null;
+  if (matchesAny([ASSISTANT_REQUEST], texts) && !assistantDecision) return null;
+  if (matchesAny([WORK_DIRECTIVE], texts)) return null;
+  if (matchesAny([DEV_INTENT], texts)) return null;
+  if (technicalContext && technicalAction) return null;
+  if (assistantDecision && technicalContext) return null;
+
+  if (matchesAny(DECLARATIVE, texts)) return 'إعلان نية';
+  if (matchesAny([TEAM_DECISION], texts) || assistantDecision) return 'سؤال عن قرار';
+  if (matchesAny(INTERROGATIVE, texts)) return 'سؤال عن قرار';
+  if (strippedTexts.some(text => matchesAny([VOCAB], [text])) && p.length < 400) return 'مفردات قرار';
   return null;
 }
 

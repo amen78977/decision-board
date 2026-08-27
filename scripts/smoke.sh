@@ -16,8 +16,11 @@ if ! claude auth status 2>/dev/null | grep -q '"loggedIn": *true'; then
   echo "     claude auth login"
   pre_ok=0
 fi
-if ! claude plugin details decision-board 2>/dev/null | grep -q 'Agents (6)'; then
-  echo "❌ البلَغن غير مثبّت أو ناقص. شغّل أولاً:"
+details=$(claude plugin details decision-board 2>/dev/null || true)
+if ! grep -q 'Agents (6)' <<<"$details" || \
+   ! grep -q 'Skills (3)' <<<"$details" || \
+   ! grep -q 'Hooks (1)' <<<"$details"; then
+  echo "❌ البلَغن غير مثبّت أو ناقص (المتوقع: Agents (6), Skills (3), Hooks (1)). شغّل أولاً:"
   echo "     claude plugin marketplace add amen78977/decision-board"
   echo "     claude plugin install decision-board@decision-board"
   pre_ok=0
