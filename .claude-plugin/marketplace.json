@@ -4,13 +4,13 @@
     "name": "Muhammet Amin",
     "url": "https://github.com/amen78977"
   },
-  "version": "0.8.0",
+  "version": "0.8.1",
   "plugins": [
     {
       "name": "decision-board",
       "displayName": "Decision Board",
       "source": "./",
-      "version": "0.8.0",
+      "version": "0.8.1",
       "description": "طاولة قرار استشارية بستة وكلاء: تشخيص، فحص وقائع، تأييد، معارضة معزولة، تنفيذ، وترجيح. بالعربية والإنجليزية. · Six-agent decision board — the critic never sees your phrasing.",
       "homepage": "https://github.com/amen78977/decision-board",
       "repository": "https://github.com/amen78977/decision-board",

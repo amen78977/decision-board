@@ -6,6 +6,14 @@
 
 ---
 
+## [0.8.1] — 2026-08-27 — compatibility and release hardening
+
+### أُضيف
+- مصفوفة GitHub Actions تختبر Node.js 18 و20 و22، مع صلاحيات `contents: read` ومهلة تشغيل محددة.
+- doctor يفحص الاختبار التكاملي، الروابط المحلية، وصياغة جميع السكربتات، ويعطي تحذيرًا صريحًا إذا لم يكن Claude Code متاحًا.
+
+---
+
 ## [0.8.0] — 2026-08-27 — reliability and retention pass
 
 ### أُضيف
