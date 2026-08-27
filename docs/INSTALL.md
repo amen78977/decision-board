@@ -12,8 +12,7 @@
 ```bash
 claude plugin marketplace add ./
 claude plugin install decision-board@decision-board
-claude plugin details decision-board   # يجب أن يظهر Agents (5)
-```
+claude plugin details decision-board   # يجب أن يظهر Agents (6) و Skills (1)
 ```
 
 تحقق: `/plugin` ثم تبويب Installed · وللوكلاء: `/agents`

@@ -240,6 +240,22 @@ grep -q '📋 خضع' docs/DEMO.md && ok "DEMO يعرض سطر 📋 حقيقيا
 grep -q 'DEMO.md' README.md && grep -q 'DEMO.md' README.ar.md && ok "الواجهتان تحيلان إلى الجلسة الحقيقية" || err "README: إحالة DEMO.md مفقودة في إحدى اللغتين"
 [ -f .github/ISSUE_TEMPLATE/field-report.yml ] && ok "قالب تقرير الميدان موجود" || err "قالب تقرير الميدان مفقود — لا قناة للعيوب الميدانية"
 
+echo "── ٢٠. اتساق التوزيع والإصدار ──"
+plugin_version=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('.claude-plugin/plugin.json','utf8')).version)")
+market_version=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('.claude-plugin/marketplace.json','utf8')).version)")
+entry_version=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('.claude-plugin/marketplace.json','utf8')).plugins[0].version)")
+[ "$plugin_version" = "$market_version" ] && ok "إصدار plugin.json يطابق إصدار marketplace" || err "إصدار plugin.json ($plugin_version) لا يطابق marketplace ($market_version)"
+[ "$plugin_version" = "$entry_version" ] && ok "إصدار سجل الإضافة يطابق manifest" || err "إصدار سجل الإضافة ($entry_version) لا يطابق manifest ($plugin_version)"
+grep -q 'Agents (6)' docs/INSTALL.md && grep -q 'Skills (1)' docs/INSTALL.md \
+  && ok "دليل التثبيت يعلن ٦ وكلاء ومهارة واحدة" \
+  || err "دليل التثبيت لا يطابق مكونات الإضافة"
+fences=$(grep -c '^```' docs/INSTALL.md)
+[ $((fences % 2)) -eq 0 ] && ok "كتل Markdown في INSTALL متوازنة" || err "كتل Markdown في INSTALL غير متوازنة"
+[ -s docs/COMMERCIALIZATION.ar.md ] && ok "خطة تحقيق الدخل موجودة" || err "خطة تحقيق الدخل مفقودة"
+grep -q 'COMMERCIALIZATION.ar.md' README.md && grep -q 'COMMERCIALIZATION.ar.md' README.ar.md \
+  && ok "خطة تحقيق الدخل مرتبطة من الواجهتين" \
+  || err "خطة تحقيق الدخل غير مرتبطة من إحدى الواجهتين"
+
 echo
 [ "$fail" -eq 0 ] && echo "🟢 نجح الفحص" || echo "🔴 فشل الفحص"
 exit $fail

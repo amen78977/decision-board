@@ -1,11 +1,14 @@
 {
   "name": "decision-board",
+  "displayName": "Decision Board",
   "version": "0.6.0",
   "description": "طاولة قرار استشارية: تشخيص قبل الحل، وفحص للوقائع، ومؤيد ومعارض معزولان بتسليح متناظر، وحَكَم يرتّب الخلاف ولا يذيبه. بالعربية والإنجليزية. · An advisory decision board — the critic never sees your phrasing, your facts are tagged before anything is built on them, and confidence is a number you're held to.",
   "author": {
     "name": "Muhammet Amin"
   },
+  "homepage": "https://github.com/amen78977/decision-board",
   "repository": "https://github.com/amen78977/decision-board",
+  "category": "productivity",
   "keywords": [
     "decision-making",
     "critical-thinking",

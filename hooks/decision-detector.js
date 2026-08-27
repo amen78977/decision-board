@@ -28,7 +28,7 @@ const DECLARATIVE = [
   // الإعلان بصيغة المضارع المستمر — أشيع صورة للقرار بالإنجليزية، وأخطرها لأنها تصف
   // فعلاً جارياً لا نيةً مستقبلية. الأفعال محصورة عمداً بمفعول غير تقني:
   // «I'm moving to Berlin» قرار، و«I'm moving this file» ليس كذلك.
-  /i(?:'?m| am) (?:quitting|resigning|dropping out|going full[- ]?time|relocating|hiring|firing (?:my|the)|investing (?:in|my)|buying (?:a|the) (?:house|car|company|business|apartment|flat)|selling (?:my|the) (?:company|business|house|car|stake|shares|apartment|flat)|leaving (?:my|the|this) (?:job|company|role|position|country|team)|moving (?:to|abroad|back|out|overseas|in with)|taking (?:the|this|that) (?:job|offer|role|position|deal)|turning down (?:the|this|their)|accepting (?:the|this|their) (?:job|offer|role|position)|shutting down (?:my|the) (?:company|business|startup|product))/i,
+  /i(?:'?m| am) (?:quitting|resigning|dropping out|going full[- ]?time|relocating|starting (?:a|the) (?:company|business|startup|venture|project)|hiring|firing (?:my|the)|investing (?:in|my)|buying (?:a|the) (?:house|car|company|business|apartment|flat)|selling (?:my|the) (?:company|business|house|car|stake|shares|apartment|flat)|leaving (?:my|the|this) (?:job|company|role|position|country|team)|moving (?:to|abroad|back|out|overseas|in with)|taking (?:the|this|that) (?:job|offer|role|position|deal)|turning down (?:the|this|their)|accepting (?:the|this|their) (?:job|offer|role|position)|shutting down (?:my|the) (?:company|business|startup|product))/i,
 ];
 
 // سؤال عن قرار
@@ -86,6 +86,18 @@ const DEV_INTENT = new RegExp(
 
 const ASSISTANT_REQUEST = /(?:هل\s+(?:يمكنك|تستطيع|بإمكانك|بامكانك|تقدر|لك أن)|هل\s+(?:من\s+)?الممكن\s+أن\s+ت|(?:can|could|would|will)\s+you|are you able to|please\s+(?:can|could)\s+you)/i;
 
+// طلب قرار موجّه إلى المساعد يظل قراراً إذا كان المطلوب هو المساعدة على الحسم،
+// لا تنفيذ عمل نيابة عن المستخدم. الطلبات التقنية تُستبعد أدناه.
+const ASSISTANT_DECISION_REQUEST = /(?:can|could|would)\s+you\s+(?:help\s+me\s+)?(?:decide|choose)|(?:هل\s+(?:يمكنك|تستطيع|بإمكانك|بامكانك|تقدر|لك أن)\s+)(?:أن\s+)?(?:تساعدني\s+(?:في\s+)?|تقرر|تختار|تحسم)/i;
+
+// قرارات جماعية أو صياغة تختزل القرار إلى مفاضلة صريحة.
+const TEAM_DECISION = /(?:we|the team|our team)\s+(?:need to|have to|must)\s+decide\s+(?:whether|between)|(?:the|this)\s+decision\s+(?:is|comes down to)\s+(?:whether|between)/i;
+
+// بعض الأفعال تبدو قرارية، لكنها إعلان تنفيذ تقني. لا تُستبعد إلا إذا ظهر
+// سياق تقني واضح، حتى لا نحجب «سأنتقل» أو «قررت أن أبدأ مشروعاً».
+const TECHNICAL_CONTEXT = /(?:file|code|codebase|function|parser|migration|production|server|library|framework|test|branch|database|api|repository|repo|deployment|src\/|react|typescript|javascript|python|node|frontend|backend|dev|الخوارزم|الكود|الشفرة|الدالة|الاختبار|المكتبة|الإطار|الترحيل|الإصدار|الملف|الخادم|قاعدة\s+البيانات|واجهة\s+برمجة)/i;
+const TECHNICAL_ACTION = /(?:(?:(?:i(?:'?ve| have)\s+decided\s+to|i(?:'?ll| will)|i(?:'?m| am)\s+(?:going\s+to|about\s+to|planning\s+to))\s+|سأ|سوف\s+أ)(?:fix|add|remove|delete|refactor|test|build|update|upgrade|implement|debug|deploy|commit|push|pull|merge|rebase|revert|create|generate|write|run|install|migrate|rename|bump|patch|clean|split|extract|document|review|check|scaffold|wire|hook|move|ship|release|promote|start|study|درس|بدأ|أبدأ|أدرس|أنشئ|أضيف|أحذف|أعدّل|أعدل|أراجع|أختبر|أشغّل|اشغل|أنشر|أرحّل|ارحل|أكتب|أبني|أحدّث|احدث|أصلح)(?![a-z]))/i;
+
 const CODE_EXT = ['js','ts','tsx','jsx','json','md','yml','yaml','sh','py','go','rs','java','css','html','toml','lock','cfg','ini','sql'];
 
 /**
@@ -114,14 +126,21 @@ function detect(prompt) {
   const p = String(prompt || '');
   if (!p || p.length > 4000) return null;
 
+  const assistantDecision = ASSISTANT_DECISION_REQUEST.test(p);
+  const technicalContext = TECHNICAL_CONTEXT.test(p);
+  const technicalAction = TECHNICAL_ACTION.test(p);
+
   // الاستبعاد قبل الإيجاب — انظر ملاحظة الصيانة ٣
   if (EXCLUDE.test(p)) return null;
   if (DEV_IMPERATIVE.test(p)) return null;
-  if (ASSISTANT_REQUEST.test(p)) return null;
+  if (ASSISTANT_REQUEST.test(p) && !assistantDecision) return null;
   if (WORK_DIRECTIVE.test(p)) return null;
   if (DEV_INTENT.test(p)) return null;
+  if (technicalContext && technicalAction) return null;
+  if (assistantDecision && technicalContext) return null;
 
   if (DECLARATIVE.some(r => r.test(p))) return 'إعلان نية';
+  if (TEAM_DECISION.test(p) || assistantDecision) return 'سؤال عن قرار';
   if (INTERROGATIVE.some(r => r.test(p))) return 'سؤال عن قرار';
   if (VOCAB.test(stripCode(p)) && p.length < 400) return 'مفردات قرار';
   return null;

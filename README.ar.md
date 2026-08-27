@@ -47,6 +47,8 @@
 
 كل الطرق في [`docs/INSTALL.md`](docs/INSTALL.md) · Gemini CLI في [`docs/GEMINI.md`](docs/GEMINI.md) · اشتقاق نسختك في [`docs/FORK.md`](docs/FORK.md)
 
+**تريد تحويله إلى منتج؟** راجع [`خطة open-core وتحقيق الدخل`](docs/COMMERCIALIZATION.ar.md) — ما الذي يبقى مجانيًا، وما الذي يمكن بيعه، وخطة اختبار السوق خلال ٩٠ يوماً.
+
 ---
 
 ## الاستخدام

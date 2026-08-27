@@ -178,6 +178,8 @@ Write in English, get English. Write in Arabic, get Arabic. The internal field s
 
 Every path in [`docs/INSTALL.md`](docs/INSTALL.md) · Gemini CLI in [`docs/GEMINI.md`](docs/GEMINI.md) · make your own fork in [`docs/FORK.md`](docs/FORK.md)
 
+**Want to turn it into a product?** See the [`open-core commercialization plan`](docs/COMMERCIALIZATION.ar.md) for the target customer, paid layer, privacy boundary, and a 90-day validation plan.
+
 ### Use it
 
 ```

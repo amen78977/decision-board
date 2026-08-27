@@ -82,6 +82,18 @@ const CASES = [
   ['Could you compare these two approaches for me', null],
   ['Would you review this file?', null],
 
+  // ═══ يجب أن تُفعّل — المساعدة على الحسم والقرارات الجماعية
+  ['Can you help me decide whether to take this offer?', 'سؤال عن قرار'],
+  ['هل يمكنك أن تساعدني في اختيار العرض؟', 'سؤال عن قرار'],
+  ['We need to decide whether to launch now or wait', 'سؤال عن قرار'],
+  ['The decision is whether to launch now or wait', 'سؤال عن قرار'],
+
+  // ═══ يجب ألا تُفعّل — قرار تقني داخل مهمة تنفيذية
+  ['سأبدأ مشروعاً تجريبياً في React', null],
+  ['سأدرس الفرق بين خيارين في الخوارزمية', null],
+  ['I will move the project to production', null],
+  ['I have decided to run the migration', null],
+
   // ═══ إيجابية كاذبة رُصدت في جلسة 0.5.2 — تفويض وتوجيه عمل
   // الكلمة وحدها موضوع؛ التملّك هو ما يجعلها قراراً.
   ['سوف اعطيك جميع القرارات والصلاحيات قم بالانتهاء من كل شيء ثم اخبرني', null],
