@@ -313,7 +313,7 @@ echo "── ٢١. runtime المحايد والـschemas والـbenchmark ─�
 for d in core core/src core/schemas core/test core/benchmark; do
   [ -d "$d" ] && ok "مجلد $d" || err "مجلد core مفقود: $d"
 done
-for f in core/package.json core/src/index.js core/src/runtime.js core/src/clarification.js core/src/validation.js core/src/providers.js \
+for f in          core/package.json core/README.md core/LICENSE core/src/index.js core/src/runtime.js core/src/clarification.js core/src/validation.js core/src/providers.js \
          core/test/core.test.js core/test/providers.test.js core/benchmark/runner.js \
          core/schemas/neutral-packet.schema.json core/schemas/role-output.schema.json \
          core/schemas/clarification.schema.json core/schemas/clarification-batch.schema.json; do
@@ -332,6 +332,12 @@ node core/test/providers.test.js >/dev/null 2>&1 \
   && ok "اختبار adapters يمر" || err "اختبار adapters فشل"
 node core/benchmark/runner.js >/dev/null 2>&1 \
   && ok "benchmark يمر" || err "benchmark فشل"
+pack_json=$(cd core && npm pack --dry-run --json 2>/dev/null)
+if node -e "const x=JSON.parse(process.argv[1]); const files=(x[0]?.files||[]).map(f=>f.path); const required=['README.md','LICENSE']; const forbidden=['test/','benchmark/']; if (!required.every(r=>files.includes(r)) || forbidden.some(prefix=>files.some(f=>f.startsWith(prefix)))) process.exit(1)" "$pack_json"; then
+  ok "npm pack يضم README وLICENSE ولا يضم test/ أو benchmark/"
+else
+  err "محتوى npm pack غير نظيف"
+fi
 check "ج١٧ حالة الاستيضاح" 'ج١٧' PROTOCOL.md "$S" "$A" "$C" agents/diagnostician.md standalone/UNIVERSAL.ar.md
 check "ج١٧ clarification gate" 'Clarification gate' standalone/UNIVERSAL.md
 check "ج١٧ clarification lifecycle" 'Clarification lifecycle' docs/ADAPTERS.md

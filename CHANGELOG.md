@@ -15,11 +15,14 @@
 - adapters اختيارية محقونة لـOpenAI Responses وAnthropic Messages؛ لا تستورد SDK ولا تقرأ مفاتيح ولا تنفذ شبكة من تلقاء نفسها.
 - benchmark deterministic من ١٠ حالات يختبر الاستيضاح، المستوى ١، عدم تناظر المدخلات، الوقائع الحرجة، رفض البيانات الحساسة، التلوث، غياب opponent، وحد الجولة الثانية.
 - `docs/RUNTIME.md` يشرح العقد، مثالاً بلا مفاتيح، وحدود العزل والتكامل.
+- `core/README.md` و`core/LICENSE` داخل tarball نفسه، مع metadata npm وروابط repository و`publishConfig.access: public`.
+- إعداد `files` يقلص حزمة npm إلى `src/` و`schemas/` وREADME والترخيص، ويستبعد الاختبارات والـbenchmark من التوزيعة.
 
 ### أُصلح
 - منع `mergeClarifications` من إدخال قيم `undefined` أو مفاتيح غير معروفة، وتطبيع الإجابات وإزالة محارف التحكم وتحديد طولها.
 - إرجاع حالة الاستيضاح صراحةً في كل نتيجة runtime، ومنع تشغيل الأدوار عندما لا توجد حزمة محايدة صالحة بعد بوابة الاستيضاح.
-- تحديث doctor وfull-plugin-test وvalidate.sh لحراسة core والـschemas والـbenchmark والـprovider adapters.
+- تحديث doctor وfull-plugin-test وvalidate.sh لحراسة core والـschemas والـbenchmark والـprovider adapters ومحتوى npm pack.
+- أضيفت أوامر `npm test` و`npm run benchmark` لتشغيل التحقق من داخل الحزمة نفسها.
 
 ### ملاحظة الاختبار
 - نجحت اختبارات core وadapters والـbenchmark واختبارات detector والتكامل المحلية. الاختبار الحي لمزود نموذج يبقى مشروطاً بالمصادقة والإعداد، ولم يُدّعَ نجاحه.

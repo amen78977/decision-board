@@ -29,7 +29,7 @@ for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json hooks/hooks.
          hooks/decision-detector.js scripts/validate.sh scripts/smoke.sh scripts/doctor.sh scripts/check-links.js \
          scripts/full-plugin-test.sh scripts/universal-contract.test.js \
          standalone/UNIVERSAL.md standalone/UNIVERSAL.ar.md docs/ADAPTERS.md docs/RUNTIME.md \
-         core/package.json core/src/runtime.js core/src/clarification.js core/src/validation.js core/src/providers.js \
+         core/package.json core/README.md core/LICENSE core/src/runtime.js core/src/clarification.js core/src/validation.js core/src/providers.js \
          core/test/core.test.js core/test/providers.test.js core/benchmark/runner.js \
          core/schemas/neutral-packet.schema.json core/schemas/role-output.schema.json \
          core/schemas/clarification.schema.json core/schemas/clarification-batch.schema.json; do
