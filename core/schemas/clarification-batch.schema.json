@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/amen78977/decision-board/blob/main/core/schemas/clarification-batch.schema.json",
+  "title": "Decision Board Clarification Batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["clarification_status", "needs_clarification", "questions", "missing", "max_questions", "round"],
+  "properties": {
+    "clarification_status": {
+      "type": "string",
+      "enum": ["complete", "partial", "unavailable"]
+    },
+    "needs_clarification": { "type": "boolean" },
+    "questions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "clarification.schema.json" }
+    },
+    "missing": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "max_questions": { "type": "integer", "minimum": 0, "maximum": 6 },
+    "round": { "type": "integer", "minimum": 0, "maximum": 2 },
+    "reason": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "needs_clarification": { "const": true } } },
+      "then": {
+        "properties": {
+          "questions": { "minItems": 3, "maxItems": 6 },
+          "max_questions": { "minimum": 3 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "needs_clarification": { "const": false } } },
+      "then": { "properties": { "questions": { "maxItems": 0 } } }
+    }
+  ]
+}

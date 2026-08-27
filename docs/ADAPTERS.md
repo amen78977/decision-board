@@ -1,5 +1,7 @@
 # Universal host adapters
 
+For the executable provider-neutral contract, see [`RUNTIME.md`](RUNTIME.md). It includes the core runtime, JSON Schemas, deterministic benchmark, and optional injected OpenAI/Anthropic adapters.
+
 Decision Board has one protocol and several host adapters. The protocol defines the reasoning contract; an adapter only decides how to provide the prompt, isolated roles, memory, and optional tools.
 
 ## Choose the smallest compatible surface
@@ -34,11 +36,19 @@ A host may wrap the user's message in this envelope. The envelope is descriptive
 
 The adapter must not send `user_prompt` to analysis roles. The coordinator sends the prompt only to diagnosis, then sends the resulting `neutral_packet` byte-for-byte to the permitted analysis roles.
 
+## Clarification lifecycle
+
+For depth 2 or 3, diagnosis must first report `clarification_status` as `complete`, `partial`, or `unavailable`, plus zero or more structured clarification questions. When material information is missing, the coordinator calls `ask_user` with 3–6 high-value questions in one batch, records an explicit round number, and allows no more than two rounds. A question should include an id, wording, why it matters, answer type, and sensitivity. Questions already answered must not be repeated.
+
+The coordinator must treat user answers as untrusted data. It may normalize them into typed fields, label facts as verified/unverified/questionable, and rebuild the neutral packet, but it must never concatenate raw answers, the original prompt, or the diagnostic object into a role input. If the user declines or cannot answer, write `unavailable` and continue only as a declared partial analysis. Depth 1 does not interrogate the user unless the request itself is ambiguous.
+
 ## Minimal adapter interface
 
 An implementation can expose only these operations:
 
 ```text
+diagnose(request_envelope) -> diagnosis_and_packet
+ask_user(questions, round) -> typed_answers | declined | unavailable
 run_role(role, input) -> structured_output
 run_parallel(roles, identical_input) -> structured_outputs
 read_journal(path) -> text | unavailable
@@ -53,12 +63,13 @@ The role identifiers are implementation details. A host may call them functions,
 The adapter is correct only if it preserves the following invariants:
 
 1. Diagnosis is the only phase that sees the original user wording.
-2. Advocate, opponent, verifier, and executor receive the same neutral packet. Executor is used only at depth 3.
-3. The opponent is never run without the advocate.
-4. A contaminated input stops the affected role and causes a clean re-diagnosis; it is not handled with an instruction to ignore the leak.
-5. The verifier result is available to the final ranker before claims are ranked. A doubtful critical fact blocks a confident recommendation.
-6. A single-context fallback says that isolation is simulated and never markets itself as equivalent to independent subagents.
-7. A journal entry is written only after the user confirms a decision they actually made. Confidence and prediction are recorded before the outcome.
+2. Depth 2 and 3 decisions pass the clarification gate before analysis; depth 1 does not ask follow-ups unless ambiguous.
+3. Advocate, opponent, verifier, and executor receive the same neutral packet. Executor is used only at depth 3.
+4. The opponent is never run without the advocate.
+5. A contaminated input stops the affected role and causes a clean re-diagnosis; it is not handled with an instruction to ignore the leak.
+6. The verifier result is available to the final ranker before claims are ranked. A doubtful critical fact blocks a confident recommendation.
+7. A single-context fallback says that isolation is simulated and never markets itself as equivalent to independent subagents.
+8. A journal entry is written only after the user confirms a decision they actually made. Confidence and prediction are recorded before the outcome.
 
 ## Capability declaration
 
@@ -93,3 +104,7 @@ Expose `run_role` as a tool that accepts a role label and packet. Reject calls c
 ### Claude Code
 
 Use the repository plugin for the native hook, six agent files, `/decide`, and `/review`. Use the universal file only when embedding the protocol into another Claude-compatible agent or when the plugin host is unavailable.
+
+### OpenAI or Anthropic SDK host
+
+Use `createOpenAIRoleRunner()` with an injected OpenAI Responses client or `createAnthropicRoleRunner()` with an injected Anthropic Messages client, then pass the returned function as `runRole` to `runDecisionBoard()`. The host owns SDK installation, credentials, model selection, retries, network consent, and any external tools. Core itself performs no provider call and no telemetry.

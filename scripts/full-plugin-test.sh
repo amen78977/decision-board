@@ -37,6 +37,12 @@ run_check syntax-js node --check hooks/decision-detector.js
 run_check syntax-js-integration node --check hooks/detector.integration.test.js
 run_check syntax-js-links node --check scripts/check-links.js
 run_check syntax-js-universal node --check scripts/universal-contract.test.js
+run_check syntax-core-runtime node --check core/src/runtime.js
+run_check syntax-core-clarification node --check core/src/clarification.js
+run_check syntax-core-validation node --check core/src/validation.js
+run_check unit-core node core/test/core.test.js
+run_check unit-providers node core/test/providers.test.js
+run_check benchmark-core node core/benchmark/runner.js
 run_check unit-universal node scripts/universal-contract.test.js
 run_check unit-detector node hooks/detector.test.js
 run_check integration-hook node hooks/detector.integration.test.js
@@ -74,6 +80,8 @@ if command -v claude >/dev/null 2>&1; then
      grep -q 'Skills (3)' <<<"$details" && \
      grep -q 'Hooks (1)' <<<"$details"; then
     ok 'installed-inventory: Agents (6), Skills (3), Hooks (1)'
+  elif printf '%s' "$details" | grep -qiE 'not found|غير مثبت|No plugin'; then
+    warn 'installed-inventory: البلَغن غير مثبت في HOME الحالي؛ تم التحقق من الحزمة المحلية فقط'
   elif [ -n "$details" ]; then
     err 'installed-inventory: inventory لا يطابق Agents (6), Skills (3), Hooks (1)'
   else

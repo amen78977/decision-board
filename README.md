@@ -6,11 +6,11 @@
 
 [![validate](https://github.com/amen78977/decision-board/actions/workflows/validate.yml/badge.svg)](https://github.com/amen78977/decision-board/actions/workflows/validate.yml) [![latest release](https://img.shields.io/github/v/release/amen78977/decision-board?sort=semver)](https://github.com/amen78977/decision-board/tags)
 
-**Six isolated agents. The critic never sees how you phrased it. Your facts get checked before anything is built on them.**
+**Six isolated agents. The critic never sees how you phrased it. Your facts get checked before anything is built on them. High-impact gaps trigger 3–6 targeted questions before analysis.**
 
 `Claude Code` · `Gemini CLI` · `ChatGPT` · any agent
 
-[Install](#install) · [Universal adapter](standalone/UNIVERSAL.md) · [Adapter spec](docs/ADAPTERS.md) · [Real run](#a-real-run-nothing-staged) · [How it works](#how-it-works) · [Protocol](PROTOCOL.md) · [Security](SECURITY.md) · [Contributing](CONTRIBUTING.md) · [العربية](README.ar.md)
+[Install](#install) · [Universal adapter](standalone/UNIVERSAL.md) · [Adapter spec](docs/ADAPTERS.md) · [Runtime](docs/RUNTIME.md) · [Real run](#a-real-run-nothing-staged) · [How it works](#how-it-works) · [Protocol](PROTOCOL.md) · [Security](SECURITY.md) · [Contributing](CONTRIBUTING.md) · [العربية](README.ar.md)
 
 [`MIT`](LICENSE) · no telemetry · no network calls of its own
 
@@ -125,7 +125,11 @@ If an agent receives anything beyond the six permitted fields, it emits `contami
 
 > Ignoring is an instruction. Rejection is a barrier.
 
-**3 · Facts are checked before logic**
+**3 · Questions before analysis**
+
+For level 2 and 3 decisions, the diagnostician checks the fields that actually change a ranking: realistic options, a measurable outcome, deadline, reversibility, constraints, resources, affected stakeholders, and critical evidence. When a material field is missing, the coordinator asks 3–6 targeted questions in one batch, explains why each matters, and allows no more than two rounds. A declined sensitive answer remains `unavailable`; it is never turned into a guess. Answers are normalized into a rebuilt neutral packet and are not passed raw to analysis roles.
+
+**4 · Facts are checked before logic**
 
 One unchecked fact becomes a **shared premise for all six**. Isolation protects the agents from your *leaning*; it does nothing about your *error* — it multiplies it, by lending the error the consensus of six.
 
@@ -136,7 +140,7 @@ Weak logic on a true fact    →  a visible error
 
 Two constraints keep the verifier from producing noise: `doubtful` means **"not established," not "false"**, and **what cannot be externally checked is not penalized** — "I hate my job" is a fact about your own world. Tagging it `doubtful` punishes honesty and buries the genuinely dangerous claim under a pile.
 
-**4 · The outside view — without fabrication**
+**5 · The outside view — without fabrication**
 
 Every predictive claim carries a reference class: the class of comparable cases, their rate, and the source. No reliable rate? It writes `unavailable` and **lowers its own confidence**.
 
@@ -144,7 +148,7 @@ Every predictive claim carries a reference class: the class of comparable cases,
 
 In testing, the opponent corrected a popular myth instead of exploiting it — *"about 26% in the first year, not the 90% commonly claimed"* — with a named, dated source. It would have been easier to keep the scarier number.
 
-**5 · Confidence is a number you are held to**
+**6 · Confidence is a number you are held to**
 
 `0.00–1.00`, never "high/medium/low." A label is unfalsifiable, so it breaks the falsifiability rule from inside the very field meant to measure it. And a label does not accumulate; a number does.
 
@@ -157,11 +161,11 @@ The journal records the prediction **and the number before the outcome**. After 
 
 > The number written before the outcome is the one thing hindsight bias cannot touch.
 
-**6 · It ranks; it does not reconcile**
+**7 · It ranks; it does not reconcile**
 
 Banned outright: *"it's balanced"* · *"there are pros and cons"* · *"both are valid views."* If it cannot decide, it does not manufacture balance — it names the disagreement and **the specific information that would settle it**.
 
-**7 · It speaks your language**
+**8 · It speaks your language**
 
 Write in English, get English. Write in Arabic, get Arabic. The internal field schema stays fixed in both — it is a wire format, not prose, and you never see it.
 
@@ -179,7 +183,7 @@ In Claude Code, run these two commands and then make one real decision:
 /decide should I launch this product now or run one more validation test?
 ```
 
-For a local checkout, run `./scripts/doctor.sh` first. For any other agent, paste the host-neutral [`standalone/UNIVERSAL.md`](standalone/UNIVERSAL.md) or its [`Arabic version`](standalone/UNIVERSAL.ar.md). It detects the host capabilities and falls back honestly when true subagent isolation is unavailable.
+For a local checkout, run `./scripts/doctor.sh` first. For any other agent, paste the host-neutral [`standalone/UNIVERSAL.md`](standalone/UNIVERSAL.md) or its [`Arabic version`](standalone/UNIVERSAL.ar.md). It detects the host capabilities and falls back honestly when true subagent isolation is unavailable. The provider-neutral runtime, schemas, examples, and deterministic benchmark live in [`docs/RUNTIME.md`](docs/RUNTIME.md).
 
 **Claude Code**
 

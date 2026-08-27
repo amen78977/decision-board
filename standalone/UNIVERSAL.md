@@ -51,6 +51,12 @@ First classify the decision:
 
 When uncertain between two levels, choose the lower one. Analysis can become avoidance.
 
+## Clarification gate before analysis
+
+For level 2 or 3, check whether the packet contains realistic options, an observable desired outcome, a deadline, reversibility, hard constraints, available resources, affected stakeholders, and critical evidence. If a material field is missing, ask 3–6 targeted questions in one batch before running analysis roles. Each question must say why it matters and what answer type is useful. Ask only about missing fields, do not repeat answered questions, and allow at most two clarification rounds.
+
+Do not ask clarification questions for a level 1 decision unless the request itself is ambiguous. If the user declines or does not know, record `unavailable`, mark the analysis `partial`, and never invent a fact. Sensitive questions are optional unless they are critical. After answers arrive, rebuild and revalidate the neutral packet; never pass raw answers, original wording, or the diagnostic object to analysis roles.
+
 ## Sealed neutral packet
 
 The diagnostic phase receives the user's request and produces two separate objects. The private diagnostic object never reaches analysis roles. The sealed packet is the only input given to advocate, opponent, verifier, and executor:
@@ -89,6 +95,8 @@ The sealed packet must remove emotional framing and preference signals without d
 **Arbiter:** only at level 3. Read verifier output first, downgrade claims resting on doubtful critical facts, rank rather than reconcile, preserve the strongest claim verbatim, and critique its own ranking.
 
 ## Final response contract
+
+If clarification was needed, emit `clarification_status: complete|partial|unavailable` and say whether the analysis is complete, partial, or unavailable when that limitation affects the ranking. Do not hide missing information behind a confident recommendation.
 
 Keep the user-facing response to 18 lines or fewer. Use this shape, translated into the user's language:
 
