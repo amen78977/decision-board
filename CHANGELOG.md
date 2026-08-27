@@ -6,7 +6,7 @@
 
 ---
 
-## [Unreleased] — product-readiness pass
+## [0.7.0] — 2026-08-27 — product-readiness pass
 
 ### أُضيف
 - وثيقة [`docs/COMMERCIALIZATION.ar.md`](docs/COMMERCIALIZATION.ar.md) لتثبيت استراتيجية open-core، الشريحة الأولى، حدود الخصوصية، ومؤشرات اختبار الاستعداد للدفع.
