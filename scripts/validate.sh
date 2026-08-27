@@ -14,7 +14,8 @@ for d in .claude-plugin agents skills/decision-board commands standalone evals s
 done
 for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json \
          "$S" commands/decide.md commands/review.md "$C" "$A" PROTOCOL.md \
-         scripts/doctor.sh scripts/check-links.js scripts/full-plugin-test.sh SECURITY.md CONTRIBUTING.md \
+         standalone/UNIVERSAL.md standalone/UNIVERSAL.ar.md docs/ADAPTERS.md \
+         scripts/doctor.sh scripts/check-links.js scripts/full-plugin-test.sh scripts/universal-contract.test.js SECURITY.md CONTRIBUTING.md \
          hooks/detector.integration.test.js; do
   [ -f "$f" ] && ok "ملف $f" || err "ملف مفقود: $f"
 done
@@ -49,6 +50,23 @@ for command in decide review; do
     && ok "$file: frontmatter سليم" \
     || err "$file: frontmatter ناقص"
 done
+
+echo "── ٤ب. المحول العالمي ──"
+grep -q 'Host capability handshake' standalone/UNIVERSAL.md \
+  && grep -q 'Final response contract' standalone/UNIVERSAL.md \
+  && ok "UNIVERSAL.md يعلن handshake وعقد الرد" \
+  || err "UNIVERSAL.md يفتقد عقد المضيف أو الرد"
+grep -q 'مصافحة قدرات المضيف' standalone/UNIVERSAL.ar.md \
+  && grep -q 'شكل الرد النهائي' standalone/UNIVERSAL.ar.md \
+  && ok "UNIVERSAL.ar.md يعلن handshake وعقد الرد" \
+  || err "UNIVERSAL.ar.md يفتقد عقد المضيف أو الرد"
+grep -q 'run_role(role, input)' docs/ADAPTERS.md \
+  && grep -q 'identical neutral packet' docs/ADAPTERS.md \
+  && ok "مواصفة المحولات تحفظ واجهة الدور والحزمة المتناظرة" \
+  || err "docs/ADAPTERS.md ناقصة أو لا تحفظ التناظر"
+node scripts/universal-contract.test.js >/dev/null 2>&1 \
+  && ok "اختبار عقد universal يمر" \
+  || err "اختبار عقد universal فشل"
 
 echo "── ٥. لا عناصر نائبة غير مستبدَلة ──"
 for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do

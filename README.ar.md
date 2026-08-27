@@ -7,9 +7,9 @@
 
 [![validate](https://github.com/amen78977/decision-board/actions/workflows/validate.yml/badge.svg)](https://github.com/amen78977/decision-board/actions/workflows/validate.yml) [![latest release](https://img.shields.io/github/v/release/amen78977/decision-board?sort=semver)](https://github.com/amen78977/decision-board/tags)
 
-`Claude Code` · `Gemini CLI` · `ChatGPT` · `أي دردشة`
+`Claude Code` · `Gemini CLI` · `ChatGPT` · `أي وكيل`
 
-[**English**](README.md) · [سجل التغييرات](CHANGELOG.md) · [البروتوكول](PROTOCOL.md) · [المعمارية](docs/ARCHITECTURE.md) · [الأمان](SECURITY.md) · [المساهمة](CONTRIBUTING.md)
+[**English**](README.md) · [المحول العالمي](standalone/UNIVERSAL.ar.md) · [مواصفة المحولات](docs/ADAPTERS.md) · [سجل التغييرات](CHANGELOG.md) · [البروتوكول](PROTOCOL.md) · [المعمارية](docs/ARCHITECTURE.md) · [الأمان](SECURITY.md) · [المساهمة](CONTRIBUTING.md)
 
 </div>
 
@@ -45,9 +45,9 @@
 /plugin install decision-board@decision-board
 ```
 
-**أي دردشة أخرى** — الصق [`standalone/CHAT.md`](standalone/CHAT.md)
+**أي وكيل أو دردشة أخرى** — الصق [`المحول العالمي`](standalone/UNIVERSAL.ar.md). وللدردشة البسيطة استخدم [`standalone/CHAT.md`](standalone/CHAT.md)
 
-كل الطرق في [`docs/INSTALL.md`](docs/INSTALL.md) · Gemini CLI في [`docs/GEMINI.md`](docs/GEMINI.md) · اشتقاق نسختك في [`docs/FORK.md`](docs/FORK.md)
+لـ Claude Code راجع [`docs/INSTALL.md`](docs/INSTALL.md) · لأي وكيل استخدم [`المحول العالمي`](standalone/UNIVERSAL.ar.md) · Gemini CLI في [`docs/GEMINI.md`](docs/GEMINI.md) · اشتقاق نسختك في [`docs/FORK.md`](docs/FORK.md)
 
 **تريد تحويله إلى منتج؟** راجع [`خطة open-core وتحقيق الدخل`](docs/COMMERCIALIZATION.ar.md) — ما الذي يبقى مجانيًا، وما الذي يمكن بيعه، وخطة اختبار السوق خلال ٩٠ يوماً.
 
