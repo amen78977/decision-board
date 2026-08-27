@@ -6,6 +6,19 @@
 
 ---
 
+## [0.8.2] — 2026-08-27 — official host verification
+
+### أُصلح
+- اجتاز manifest التحقق الرسمي من Claude Code بوضع `--strict` بعد نقل `category` إلى marketplace، حيث لا يقبله `plugin.json`.
+- اجتاز التثبيت الفعلي من GitHub في HOME معزول، وأثبت inventory الصحيح: 6 Agents و3 Skills و1 UserPromptSubmit Hook.
+- صُححت توقعات `docs/INSTALL.md` و`scripts/smoke.sh` و`scripts/validate.sh` من Skills (1) إلى Skills (3).
+- أضيف `scripts/full-plugin-test.sh` لاختبار الحزمة المنسوخة، inventory المضيف، ومسار smoke الحي اختياريًا.
+
+### ملاحظة اختبار
+- تم الوصول إلى Claude Code الحي، لكن استدعاء النموذج توقف عند `Not logged in`; هذا قيد مصادقة لا فشل تثبيت أو manifest.
+
+---
+
 ## [0.8.1] — 2026-08-27 — compatibility and release hardening
 
 ### أُضيف
@@ -29,7 +42,7 @@
 ### أُصلح
 - حُميت قاعدة الاستعلام المعرفي من مطابقة جزء كلمة بعد إزالة التشكيل، مثل مطابقة `عرّف` داخل `أعرف`.
 - زادت حالات اختبار الكاشف من 88 إلى 99، مع فحص صريح لحجم ومحتوى مخرج hook.
-- صار smoke preflight يتحقق من Agents (6) وSkills (1) وHooks (1) قبل إنفاق أي استدعاء نموذج.
+- صار smoke preflight يتحقق من Agents (6) وSkills (3) وHooks (1) قبل إنفاق أي استدعاء نموذج.
 
 ---
 

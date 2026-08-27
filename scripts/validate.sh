@@ -14,7 +14,7 @@ for d in .claude-plugin agents skills/decision-board commands standalone evals s
 done
 for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json \
          "$S" commands/decide.md commands/review.md "$C" "$A" PROTOCOL.md \
-         scripts/doctor.sh scripts/check-links.js SECURITY.md CONTRIBUTING.md \
+         scripts/doctor.sh scripts/check-links.js scripts/full-plugin-test.sh SECURITY.md CONTRIBUTING.md \
          hooks/detector.integration.test.js; do
   [ -f "$f" ] && ok "ملف $f" || err "ملف مفقود: $f"
 done
@@ -219,11 +219,11 @@ fi
 
 echo "── ١٧. الاختبار السلوكي (smoke.sh) ──"
 if [ -f scripts/smoke.sh ]; then
-  bash -n scripts/smoke.sh scripts/doctor.sh 2>/dev/null && ok "صياغة smoke.sh وdoctor.sh سليمة" || err "scripts: خطأ صياغة"
+  bash -n scripts/smoke.sh scripts/doctor.sh scripts/full-plugin-test.sh 2>/dev/null && ok "صياغة smoke.sh وdoctor.sh وfull-plugin-test.sh سليمة" || err "scripts: خطأ صياغة"
   n=$(grep -c '^run [A-Z]-' scripts/smoke.sh)
   [ "$n" -ge 6 ] && ok "يغطي $n حالات سلوكية" || err "smoke.sh يغطي $n فقط — طبقة الإثبات بلا اختبار سلوكي"
-  grep -q 'Agents (6)' scripts/smoke.sh && grep -q 'Skills (1)' scripts/smoke.sh && grep -q 'Hooks (1)' scripts/smoke.sh \
-    && ok "الفحص المسبق يتوقع ٦ وكلاء ومهارة وhook" \
+  grep -q 'Agents (6)' scripts/smoke.sh && grep -q 'Skills (3)' scripts/smoke.sh && grep -q 'Hooks (1)' scripts/smoke.sh \
+    && ok "الفحص المسبق يتوقع ٦ وكلاء و٣ مهارات وhook" \
     || err "smoke.sh: الفحص المسبق لا يتحقق من مكونات الإضافة كاملة"
   for fn in numeric_conf flags_unverified no_fabricated_stat; do
     grep -q "^$fn()" scripts/smoke.sh && ok "مُصحِّح $fn" || err "smoke.sh: مُصحِّح $fn مفقود"
@@ -269,8 +269,8 @@ market_version=$(node -e "process.stdout.write(JSON.parse(require('fs').readFile
 entry_version=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('.claude-plugin/marketplace.json','utf8')).plugins[0].version)")
 [ "$plugin_version" = "$market_version" ] && ok "إصدار plugin.json يطابق إصدار marketplace" || err "إصدار plugin.json ($plugin_version) لا يطابق marketplace ($market_version)"
 [ "$plugin_version" = "$entry_version" ] && ok "إصدار سجل الإضافة يطابق manifest" || err "إصدار سجل الإضافة ($entry_version) لا يطابق manifest ($plugin_version)"
-grep -q 'Agents (6)' docs/INSTALL.md && grep -q 'Skills (1)' docs/INSTALL.md \
-  && ok "دليل التثبيت يعلن ٦ وكلاء ومهارة واحدة" \
+grep -q 'Agents (6)' docs/INSTALL.md && grep -q 'Skills (3)' docs/INSTALL.md && grep -q 'Hooks (1)' docs/INSTALL.md \
+  && ok "دليل التثبيت يعلن ٦ وكلاء و٣ مهارات وhook" \
   || err "دليل التثبيت لا يطابق مكونات الإضافة"
 fences=$(grep -c '^```' docs/INSTALL.md)
 [ $((fences % 2)) -eq 0 ] && ok "كتل Markdown في INSTALL متوازنة" || err "كتل Markdown في INSTALL غير متوازنة"
