@@ -8,9 +8,9 @@
 
 **Six isolated agents. The critic never sees how you phrased it. Your facts get checked before anything is built on them.**
 
-`Claude Code` · `Gemini CLI` · `ChatGPT` · any chat
+`Claude Code` · `Gemini CLI` · `ChatGPT` · any agent
 
-[Install](#install) · [Real run](#a-real-run-nothing-staged) · [How it works](#how-it-works) · [Protocol](PROTOCOL.md) · [Security](SECURITY.md) · [Contributing](CONTRIBUTING.md) · [العربية](README.ar.md)
+[Install](#install) · [Universal adapter](standalone/UNIVERSAL.md) · [Adapter spec](docs/ADAPTERS.md) · [Real run](#a-real-run-nothing-staged) · [How it works](#how-it-works) · [Protocol](PROTOCOL.md) · [Security](SECURITY.md) · [Contributing](CONTRIBUTING.md) · [العربية](README.ar.md)
 
 [`MIT`](LICENSE) · no telemetry · no network calls of its own
 
@@ -179,7 +179,7 @@ In Claude Code, run these two commands and then make one real decision:
 /decide should I launch this product now or run one more validation test?
 ```
 
-For a local checkout, run `./scripts/doctor.sh` first. For any other chat, paste [`standalone/CHAT.md`](standalone/CHAT.md); it is a sequential prompt version and does not provide true subagent isolation.
+For a local checkout, run `./scripts/doctor.sh` first. For any other agent, paste the host-neutral [`standalone/UNIVERSAL.md`](standalone/UNIVERSAL.md) or its [`Arabic version`](standalone/UNIVERSAL.ar.md). It detects the host capabilities and falls back honestly when true subagent isolation is unavailable.
 
 **Claude Code**
 
@@ -188,7 +188,7 @@ For a local checkout, run `./scripts/doctor.sh` first. For any other chat, paste
 /plugin install decision-board@decision-board
 ```
 
-**Any other chat** — paste [`standalone/CHAT.md`](standalone/CHAT.md). One message, no install.
+**Any other agent or chat** — paste [`standalone/UNIVERSAL.md`](standalone/UNIVERSAL.md). For a shorter chat-only fallback, use [`standalone/CHAT.md`](standalone/CHAT.md).
 
 Every path in [`docs/INSTALL.md`](docs/INSTALL.md) · Gemini CLI in [`docs/GEMINI.md`](docs/GEMINI.md) · make your own fork in [`docs/FORK.md`](docs/FORK.md)
 

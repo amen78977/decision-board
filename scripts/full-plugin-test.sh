@@ -32,10 +32,12 @@ printf '%s\n' 'Decision Board full plugin test / الاختبار الشامل'
 printf '%s\n' "المستودع: $ROOT"
 printf '%s\n' "المخرجات: $OUT"
 
-run_check syntax-bash bash -n scripts/validate.sh scripts/smoke.sh scripts/doctor.sh
+run_check syntax-bash bash -n scripts/validate.sh scripts/smoke.sh scripts/doctor.sh scripts/full-plugin-test.sh
 run_check syntax-js node --check hooks/decision-detector.js
 run_check syntax-js-integration node --check hooks/detector.integration.test.js
 run_check syntax-js-links node --check scripts/check-links.js
+run_check syntax-js-universal node --check scripts/universal-contract.test.js
+run_check unit-universal node scripts/universal-contract.test.js
 run_check unit-detector node hooks/detector.test.js
 run_check integration-hook node hooks/detector.integration.test.js
 run_check markdown-links node scripts/check-links.js

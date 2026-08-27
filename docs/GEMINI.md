@@ -1,6 +1,6 @@
 # التركيب على Gemini CLI
 
-صيغة البلَغن خاصة بـ Claude Code. لكن ملفات الوكلاء نفسها تعمل في Gemini CLI بلا تعديل.
+صيغة البلَغن الأصلية خاصة بـ Claude Code، لكن البروتوكول نفسه مستقل عن المضيف. لدمجه مع أي agent استخدم [`standalone/UNIVERSAL.md`](../standalone/UNIVERSAL.md) أو [`UNIVERSAL.ar.md`](../standalone/UNIVERSAL.ar.md)، ولربط orchestrator ذي subagents راجع [`ADAPTERS.md`](ADAPTERS.md). ملفات الوكلاء تعمل في Gemini CLI بلا تعديل.
 
 ## الخطوات
 
@@ -20,6 +20,10 @@ cp agents/*.md .gemini/agents/
 ثم ضع محتوى `skills/decision-board/SKILL.md` في ملف `GEMINI.md` بجذر المشروع.
 
 للتحقق: `/agents`
+
+## أي وكيل آخر
+
+إذا لم يكن المضيف Claude Code أو Gemini CLI، لا تحاول تقليد أوامر `/plugin`. الصق المحول العالمي في تعليمات النظام أو المطوّر، ودع المضيف يختار بين الوكلاء الفرعيين المستقلين والتتابع داخل السياق. يجب أن يصرّح المضيف إذا كان العزل مُحاكى، وأن يمرر `الحزمة_المحايدة` نفسها حرفيًا إلى أدوار التحليل.
 
 ## فروق يجب معرفتها
 

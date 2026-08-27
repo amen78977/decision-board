@@ -26,7 +26,9 @@ else
 fi
 
 for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json hooks/hooks.json \
-         hooks/decision-detector.js scripts/validate.sh scripts/smoke.sh scripts/doctor.sh scripts/check-links.js; do
+         hooks/decision-detector.js scripts/validate.sh scripts/smoke.sh scripts/doctor.sh scripts/check-links.js \
+         scripts/full-plugin-test.sh scripts/universal-contract.test.js \
+         standalone/UNIVERSAL.md standalone/UNIVERSAL.ar.md docs/ADAPTERS.md; do
   [ -r "$f" ] && ok "ملف موجود: $f" || err "ملف مفقود أو غير قابل للقراءة: $f"
 done
 
@@ -41,7 +43,9 @@ if command -v node >/dev/null 2>&1; then
     && ok 'اختبار hook التكاملي نجح' || err 'اختبار hook التكاملي فشل — شغّل node hooks/detector.integration.test.js لرؤية التفاصيل.'
   node scripts/check-links.js >/dev/null 2>&1 \
     && ok 'الروابط المحلية سليمة' || err 'يوجد رابط Markdown محلي مكسور.'
-  bash -n scripts/validate.sh scripts/smoke.sh scripts/doctor.sh \
+  node scripts/universal-contract.test.js >/dev/null 2>&1 \
+    && ok 'عقد المحول العالمي سليم' || err 'اختبار عقد المحول العالمي فشل.'
+  bash -n scripts/validate.sh scripts/smoke.sh scripts/doctor.sh scripts/full-plugin-test.sh \
     && ok 'صياغة السكربتات سليمة' || err 'يوجد خطأ صياغة في أحد السكربتات.'
 fi
 
