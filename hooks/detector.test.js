@@ -111,6 +111,17 @@ const CASES = [
   ['المقايضة هنا بين السرعة والجودة', 'مفردات قرار'],
   ['this is a big decision for me', 'مفردات قرار'],
 
+  // ═══ 0.7.0 — تطبيع العربية وصيغ القرار الجماعي
+  ['عندي خِياران ولا أعرف أيهما', 'مفردات قرار'],
+  ['ايهما افضل: التوظيف ام التعاقد؟', 'سؤال عن قرار'],
+  ['ما رايك في التوسع هذا العام؟', 'سؤال عن قرار'],
+  ['نحن نحتاج أن نقرر بين خيارين', 'سؤال عن قرار'],
+  ['We need to choose between vendors', 'سؤال عن قرار'],
+  ['هذا القرار ينحصر بين التوظيف والتعاقد', 'سؤال عن قرار'],
+  ['عرّف القرار الإداري', null],
+  ['أعرف خيارين جيدين', null],
+  ['Please define a decision tree', null],
+
   // ═══ حالات حدّية
   ['', null],
   [null, null],
@@ -134,6 +145,8 @@ const STRUCTURE = [
   ['يصرّح بأنه آلي', sample.indexOf('آلي') !== -1],
   ['يمنح مخرجاً عند الخطأ', sample.indexOf('فتجاهل هذا التذكير') !== -1],
   ['لا يذكر اسم وكيل (ج١١)', !/opponent|advocate|arbiter|verifier|executor|diagnostician/.test(sample)],
+  ['يبقى تحت حد hook الموثق', sample.length < 10000],
+  ['لا يحقن نص المستخدم', !sample.includes('USER_DECISION_SENTINEL_7f3a')],
 ];
 for (const [label, ok] of STRUCTURE) {
   if (ok) { pass++; continue; }

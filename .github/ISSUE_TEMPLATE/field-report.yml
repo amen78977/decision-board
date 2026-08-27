@@ -59,7 +59,7 @@ body:
     attributes:
       label: Version
       description: "Run `ls ~/.claude/plugins/cache/decision-board/decision-board/` — the folder name is the version actually loaded."
-      placeholder: "0.6.0"
+      placeholder: "0.8.0"
     validations:
       required: true
 

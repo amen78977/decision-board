@@ -5,9 +5,11 @@
 
 **نظام استشاري لاتخاذ القرارات — يشخّص المشكلة قبل حلّها، ويعزل المعارضة بنيوياً، ويرتّب الخلاف بدل أن يذيبه.**
 
+[![validate](https://github.com/amen78977/decision-board/actions/workflows/validate.yml/badge.svg)](https://github.com/amen78977/decision-board/actions/workflows/validate.yml) [![latest release](https://img.shields.io/github/v/release/amen78977/decision-board?sort=semver)](https://github.com/amen78977/decision-board/tags)
+
 `Claude Code` · `Gemini CLI` · `ChatGPT` · `أي دردشة`
 
-[**English**](README.md) · [سجل التغييرات](CHANGELOG.md) · [البروتوكول](PROTOCOL.md) · [المعمارية](docs/ARCHITECTURE.md)
+[**English**](README.md) · [سجل التغييرات](CHANGELOG.md) · [البروتوكول](PROTOCOL.md) · [المعمارية](docs/ARCHITECTURE.md) · [الأمان](SECURITY.md) · [المساهمة](CONTRIBUTING.md)
 
 </div>
 
@@ -64,7 +66,15 @@
 
 الإعلان لا يحمل علامة استفهام — وهو أخطر شكل للقرار، لأن الثقة في الصياغة تُخفي أن قراراً يُتخذ الآن.
 
-**البلَغن يفرض محفّزه بنفسه.** منذ 0.4.0 يشحن hook على `UserPromptSubmit` يكشف صياغة القرار ويحقن التذكير — فلا يحتاج تعديل `CLAUDE.md` الشخصي ليعمل. الكاشف يستبعد الاستعلام المعرفي («ما الفرق بين») والعمل التقني («أصلح هذا الخطأ)»، ولا يكلّف سياقاً: يعمل في الهارنس لا في النموذج.
+**البلَغن يفرض محفّزه بنفسه.** منذ 0.4.0 يشحن hook على `UserPromptSubmit` يكشف صياغة القرار ويحقن التذكير — فلا يحتاج تعديل `CLAUDE.md` الشخصي ليعمل. الكاشف يستبعد الاستعلام المعرفي («ما الفرق بين») والعمل التقني («أصلح هذا الخطأ»)، ولا يكلّف سياقاً: يعمل في الهارنس لا في النموذج.
+
+بعد وقوع القرار، لا تنهِ الدورة:
+
+```text
+/review مراجعة قرار الإطلاق
+```
+
+يراجع هذا الأمر القرارات المستحقة في `~/.claude/decision-board/JOURNAL.md`، يسجل النتيجة، ويحدّث المعايرة دون إعادة كتابة رقم الثقة الذي سُجل قبل النتيجة.
 
 **مثال كامل بكل ما يحدث خلف الستار:** [`examples/walkthrough.md`](examples/walkthrough.md)
 
@@ -243,6 +253,6 @@ decision-board/
 
 <div align="center">
 
-**MIT**
+[**MIT**](LICENSE)
 
 </div>

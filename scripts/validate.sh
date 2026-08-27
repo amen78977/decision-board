@@ -13,7 +13,9 @@ for d in .claude-plugin agents skills/decision-board commands standalone evals s
   [ -d "$d" ] && ok "مجلد $d" || err "مجلد مفقود: $d"
 done
 for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json \
-         "$S" commands/decide.md "$C" "$A" PROTOCOL.md; do
+         "$S" commands/decide.md commands/review.md "$C" "$A" PROTOCOL.md \
+         scripts/doctor.sh scripts/check-links.js SECURITY.md CONTRIBUTING.md \
+         hooks/detector.integration.test.js; do
   [ -f "$f" ] && ok "ملف $f" || err "ملف مفقود: $f"
 done
 
@@ -40,6 +42,13 @@ dupes=$(grep -h '^name:' agents/*.md 2>/dev/null | sort | uniq -d)
 echo "── ٤. المهارة ──"
 grep -q '^name: decision-board' "$S" && ok "name صحيح" || err "SKILL.md: name خاطئ أو مفقود"
 grep -q '^description:' "$S" && ok "description موجود" || err "SKILL.md: description مفقود"
+
+for command in decide review; do
+  file="commands/$command.md"
+  head -1 "$file" | grep -q '^---$' && grep -q '^description:' "$file" \
+    && ok "$file: frontmatter سليم" \
+    || err "$file: frontmatter ناقص"
+done
 
 echo "── ٥. لا عناصر نائبة غير مستبدَلة ──"
 for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
@@ -187,10 +196,22 @@ if [ -f hooks/hooks.json ] && [ -f hooks/decision-detector.js ]; then
   grep -q 'أمامي|امامي|عندي' hooks/decision-detector.js \
     && ok "طبقة المفردات تشترط تملّك القرار لا وروده" \
     || err "الكاشف: طبقة المفردات فضفاضة — تُفعّل على أي ذكر لكلمة «قرار»"
+  node --check hooks/decision-detector.js 2>/dev/null \
+    && ok "صياغة decision-detector.js سليمة" \
+    || err "decision-detector.js: خطأ صياغة"
+  grep -q 'normalizeArabic' hooks/decision-detector.js \
+    && grep -q 'NORMALIZED_PATTERN_CACHE' hooks/decision-detector.js \
+    && ok "التطبيع العربي وتخزين الأنماط مفعّلان" \
+    || err "الكاشف يفتقد التطبيع أو التخزين المؤقت"
   if node hooks/detector.test.js >/dev/null 2>&1; then
     ok "اختبار الوحدة: $(node hooks/detector.test.js 2>/dev/null | tail -1)"
   else
     err "اختبار الوحدة فشل:"; node hooks/detector.test.js 2>&1 | head -8
+  fi
+  if node hooks/detector.integration.test.js >/dev/null 2>&1; then
+    ok "الاختبار التكاملي: $(node hooks/detector.integration.test.js 2>/dev/null | tail -1)"
+  else
+    err "الاختبار التكاملي فشل:"; node hooks/detector.integration.test.js 2>&1 | head -8
   fi
 else
   err "hooks/ ناقص — البلَغن يعتمد على تعديل CLAUDE.md الشخصي"
@@ -198,10 +219,12 @@ fi
 
 echo "── ١٧. الاختبار السلوكي (smoke.sh) ──"
 if [ -f scripts/smoke.sh ]; then
-  bash -n scripts/smoke.sh 2>/dev/null && ok "صياغة smoke.sh سليمة" || err "smoke.sh: خطأ صياغة"
+  bash -n scripts/smoke.sh scripts/doctor.sh 2>/dev/null && ok "صياغة smoke.sh وdoctor.sh سليمة" || err "scripts: خطأ صياغة"
   n=$(grep -c '^run [A-Z]-' scripts/smoke.sh)
   [ "$n" -ge 6 ] && ok "يغطي $n حالات سلوكية" || err "smoke.sh يغطي $n فقط — طبقة الإثبات بلا اختبار سلوكي"
-  grep -q 'Agents (6)' scripts/smoke.sh && ok "الفحص المسبق يتوقع ٦ وكلاء" || err "smoke.sh: الفحص المسبق ما يزال يتوقع ٥"
+  grep -q 'Agents (6)' scripts/smoke.sh && grep -q 'Skills (1)' scripts/smoke.sh && grep -q 'Hooks (1)' scripts/smoke.sh \
+    && ok "الفحص المسبق يتوقع ٦ وكلاء ومهارة وhook" \
+    || err "smoke.sh: الفحص المسبق لا يتحقق من مكونات الإضافة كاملة"
   for fn in numeric_conf flags_unverified no_fabricated_stat; do
     grep -q "^$fn()" scripts/smoke.sh && ok "مُصحِّح $fn" || err "smoke.sh: مُصحِّح $fn مفقود"
   done
@@ -212,7 +235,7 @@ fi
 echo "── ١٧ب. حراس الكاشف الميدانية ──"
 grep -q 'quitting' hooks/decision-detector.js && ok "يمسك الإعلان بالمضارع المستمر" || err "الكاشف: صيغة «I am quitting» تفلت — أشيع صورة للقرار بالإنجليزية"
 grep -q 'DEV_INTENT' hooks/decision-detector.js && ok "يستبعد نية العمل التقني" || err "الكاشف: «سأضيف اختباراً» ستُفعّل الطاولة"
-grep -q 'DEV_INTENT.test' hooks/decision-detector.js && ok "DEV_INTENT موصول بسلسلة الاستبعاد" || err "DEV_INTENT معرَّف وغير مستدعى — حارس ميت"
+grep -q 'matchesAny(\[DEV_INTENT\]' hooks/decision-detector.js && ok "DEV_INTENT موصول بسلسلة الاستبعاد" || err "DEV_INTENT معرَّف وغير مستدعى — حارس ميت"
 n=$(grep -c "إعلان نية'\]" hooks/detector.test.js)
 [ "$n" -ge 20 ] && ok "$n حالة إعلان نية مغطاة" || err "تغطية إعلان النية $n فقط"
 
@@ -255,6 +278,15 @@ fences=$(grep -c '^```' docs/INSTALL.md)
 grep -q 'COMMERCIALIZATION.ar.md' README.md && grep -q 'COMMERCIALIZATION.ar.md' README.ar.md \
   && ok "خطة تحقيق الدخل مرتبطة من الواجهتين" \
   || err "خطة تحقيق الدخل غير مرتبطة من إحدى الواجهتين"
+[ -s SECURITY.md ] && ok "سياسة الأمان والخصوصية موجودة" || err "SECURITY.md مفقود"
+[ -s CONTRIBUTING.md ] && ok "دليل المساهمة والاختبار موجود" || err "CONTRIBUTING.md مفقود"
+[ -x scripts/doctor.sh ] && ok "أداة doctor قابلة للتنفيذ" || err "scripts/doctor.sh مفقود أو غير قابل للتنفيذ"
+node --check scripts/check-links.js 2>/dev/null && node scripts/check-links.js >/dev/null \
+  && ok "الروابط المحلية في Markdown سليمة" \
+  || err "يوجد رابط محلي مكسور في Markdown"
+[ -s .github/workflows/validate.yml ] && grep -q 'contents: read' .github/workflows/validate.yml \
+  && ok "CI بصلاحيات قراءة فقط" \
+  || err "CI لا يقيّد صلاحياته إلى القراءة"
 
 echo
 [ "$fail" -eq 0 ] && echo "🟢 نجح الفحص" || echo "🔴 فشل الفحص"

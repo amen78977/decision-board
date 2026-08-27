@@ -4,13 +4,15 @@
 
 ### Your AI agrees with you. This one doesn't.
 
+[![validate](https://github.com/amen78977/decision-board/actions/workflows/validate.yml/badge.svg)](https://github.com/amen78977/decision-board/actions/workflows/validate.yml) [![latest release](https://img.shields.io/github/v/release/amen78977/decision-board?sort=semver)](https://github.com/amen78977/decision-board/tags)
+
 **Six isolated agents. The critic never sees how you phrased it. Your facts get checked before anything is built on them.**
 
 `Claude Code` · `Gemini CLI` · `ChatGPT` · any chat
 
-[Install](#install) · [Real run](#a-real-run-nothing-staged) · [How it works](#how-it-works) · [Protocol](PROTOCOL.md) · [العربية](README.ar.md)
+[Install](#install) · [Real run](#a-real-run-nothing-staged) · [How it works](#how-it-works) · [Protocol](PROTOCOL.md) · [Security](SECURITY.md) · [Contributing](CONTRIBUTING.md) · [العربية](README.ar.md)
 
-`MIT` · no telemetry · no network calls of its own
+[`MIT`](LICENSE) · no telemetry · no network calls of its own
 
 </div>
 
@@ -167,6 +169,18 @@ Write in English, get English. Write in Arabic, get Arabic. The internal field s
 
 ## Install
 
+### 60-second start
+
+In Claude Code, run these two commands and then make one real decision:
+
+```text
+/plugin marketplace add amen78977/decision-board
+/plugin install decision-board@decision-board
+/decide should I launch this product now or run one more validation test?
+```
+
+For a local checkout, run `./scripts/doctor.sh` first. For any other chat, paste [`standalone/CHAT.md`](standalone/CHAT.md); it is a sequential prompt version and does not provide true subagent isolation.
+
 **Claude Code**
 
 ```
@@ -192,6 +206,14 @@ Or just describe the decision. It fires on both forms:
 - **Declarations** — "I'm quitting" · "I've decided" · "I'm going to invest"
 
 **It arms its own trigger.** Since 0.4.0 it ships a `UserPromptSubmit` hook that detects decision phrasing and injects the reminder — no edit to your personal `CLAUDE.md` required. The detector excludes knowledge queries ("what's the difference between") and technical work orders ("fix this bug"), and **costs zero context**: it runs in the harness, not in the model.
+
+When a real decision is complete, keep the loop alive:
+
+```text
+/review launch validation
+```
+
+This reviews due entries in `~/.claude/decision-board/JOURNAL.md`, records the outcome, and updates calibration without rewriting the confidence you gave before the result.
 
 ---
 

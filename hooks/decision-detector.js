@@ -33,7 +33,7 @@ const DECLARATIVE = [
 
 // سؤال عن قرار
 const INTERROGATIVE = [
-  /هل\s+(?:أ|ن|ي)\S*|أيهما\s+أفضل|أيهما\s+تنصح|ما\s+رأيك\s+في|أنصحني|انصحني|محتار|متردد|أفكر\s+في|أميل\s+(?:إلى|ل)|ماذا\s+(?:لو|أفعل)/,
+  /هل\s+(?:أ|ا|إ|آ|ن|ي)\S*|أيهما\s+أفضل|ايهما\s+افضل|أيهما\s+تنصح|ايهما\s+تنصح|ما\s+رأيك\s+في|أنصحني|انصحني|محتار|متردد|أفكر\s+في|افكر\s+في|أميل\s+(?:إلى|الى|ل)|اميل\s+(?:الى|ل)|ماذا\s+(?:لو|أفعل|افعل)/,
   /(?:should i|shall i|which is better|which one should|what do you think about|help me (?:decide|choose)|is it worth|worth it to|am i (?:right|wrong) to|would you (?:quit|leave|invest))/i,
   /(?:torn between|stuck between|can'?t decide|not sure whether)/i,
 ];
@@ -65,7 +65,7 @@ const VOCAB = new RegExp([
 const WORK_DIRECTIVE = /(?:قم\s+ب|قومي\s+ب|أعطيك|اعطيك|سأعطيك|ساعطيك|أمنحك|امنحك|الصلاحي|صلاحية|فوّضتك|فوضتك|انتهِ\s+من|انته\s+من|أكمل\s+العمل|اكمل\s+العمل|go ahead and|you have (?:full )?(?:permission|authority)|i(?:'m| am) giving you)/i;
 
 // استعلام معرفي — لا قرار
-const EXCLUDE = /(?:أي مكتبة|which library|أي framework|ما الفرق بين|what'?s the difference|اشرح|explain|كيف أكتب|how do i (?:write|implement)|ما معنى|what does .{1,30} mean|عرّف|define)/i;
+const EXCLUDE = /(?:أي مكتبة|which library|أي framework|ما الفرق بين|what'?s the difference|اشرح|explain|كيف أكتب|how do i (?:write|implement)|ما معنى|what does .{1,30} mean|(?:^|\s)عرّف(?:\s|$)|(?:^|\s)define(?:\s|$))/i;
 
 // أمر عمل تقني — طلب تنفيذ، لا قرار يُستشار فيه
 const DEV_IMPERATIVE = /^\s*(?:أصلح|عدل|عدّل|صحح|صحّح|شغل|شغّل|اكتب|أضف|احذف|ارفع|نفذ|نفّذ|راجع|اختبر|ابن|ابنِ|حدث|حدّث|انسخ|امسح|رتب|رتّب|اقرأ|افحص|أنشئ|انشئ|ولّد|ولد|حسّن|حسن|أكمل|اكمل|تابع|استمر|أعد|اعد|fix|run|write|add|remove|refactor|test|build|update|implement|debug|deploy|commit|push|create|generate|continue|resume|finish|make|install|migrate|rename)(?:\s|$)/i;
@@ -91,7 +91,7 @@ const ASSISTANT_REQUEST = /(?:هل\s+(?:يمكنك|تستطيع|بإمكانك|�
 const ASSISTANT_DECISION_REQUEST = /(?:can|could|would)\s+you\s+(?:help\s+me\s+)?(?:decide|choose)|(?:هل\s+(?:يمكنك|تستطيع|بإمكانك|بامكانك|تقدر|لك أن)\s+)(?:أن\s+)?(?:تساعدني\s+(?:في\s+)?|تقرر|تختار|تحسم)/i;
 
 // قرارات جماعية أو صياغة تختزل القرار إلى مفاضلة صريحة.
-const TEAM_DECISION = /(?:we|the team|our team)\s+(?:need to|have to|must)\s+decide\s+(?:whether|between)|(?:the|this)\s+decision\s+(?:is|comes down to)\s+(?:whether|between)/i;
+const TEAM_DECISION = /(?:we|the team|our team)\s+(?:need to|have to|must)\s+decide\s+(?:whether|between)|(?:the|this)\s+decision\s+(?:is|comes down to)\s+(?:whether|between)|(?:we|our team|the team)\s+(?:need to|have to|must)\s+(?:make a decision|choose)\b|(?:نحن|فريقنا|الفريق)\s+(?:نحتاج|علينا|يجب)\s+(?:أن\s+)?(?:نقرر|نحسم|نختار)|(?:هذا|ذلك)\s+القرار\s+(?:هو|ينحصر)\s+(?:أن|بين)/i;
 
 // بعض الأفعال تبدو قرارية، لكنها إعلان تنفيذ تقني. لا تُستبعد إلا إذا ظهر
 // سياق تقني واضح، حتى لا نحجب «سأنتقل» أو «قررت أن أبدأ مشروعاً».
@@ -122,27 +122,62 @@ function stripCode(text) {
     .join(' ');
 }
 
+function normalizeArabic(text) {
+  return String(text)
+    .normalize('NFKC')
+    .replace(/[\u064B-\u065F\u0670]/g, '')
+    .replace(/[إأآٱ]/g, 'ا')
+    .replace(/ى/g, 'ي')
+    .replace(/ـ/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function normalizePattern(pattern) {
+  return new RegExp(normalizeArabic(pattern.source), pattern.flags.replace('g', ''));
+}
+
+function matches(pattern, text) {
+  pattern.lastIndex = 0;
+  return pattern.test(text);
+}
+
+const NORMALIZED_PATTERN_CACHE = new WeakMap();
+
+function matchesAny(patterns, texts) {
+  return patterns.some(pattern => {
+    let normalizedPattern = NORMALIZED_PATTERN_CACHE.get(pattern);
+    if (!normalizedPattern) {
+      normalizedPattern = normalizePattern(pattern);
+      NORMALIZED_PATTERN_CACHE.set(pattern, normalizedPattern);
+    }
+    return texts.some(text => matches(pattern, text) || matches(normalizedPattern, text));
+  });
+}
+
 function detect(prompt) {
   const p = String(prompt || '');
   if (!p || p.length > 4000) return null;
 
-  const assistantDecision = ASSISTANT_DECISION_REQUEST.test(p);
-  const technicalContext = TECHNICAL_CONTEXT.test(p);
-  const technicalAction = TECHNICAL_ACTION.test(p);
+  const texts = [p, normalizeArabic(p)];
+  const strippedTexts = texts.map(stripCode);
+  const assistantDecision = matchesAny([ASSISTANT_DECISION_REQUEST], texts);
+  const technicalContext = matchesAny([TECHNICAL_CONTEXT], texts);
+  const technicalAction = matchesAny([TECHNICAL_ACTION], texts);
 
   // الاستبعاد قبل الإيجاب — انظر ملاحظة الصيانة ٣
-  if (EXCLUDE.test(p)) return null;
-  if (DEV_IMPERATIVE.test(p)) return null;
-  if (ASSISTANT_REQUEST.test(p) && !assistantDecision) return null;
-  if (WORK_DIRECTIVE.test(p)) return null;
-  if (DEV_INTENT.test(p)) return null;
+  if (matchesAny([EXCLUDE], texts)) return null;
+  if (matchesAny([DEV_IMPERATIVE], texts)) return null;
+  if (matchesAny([ASSISTANT_REQUEST], texts) && !assistantDecision) return null;
+  if (matchesAny([WORK_DIRECTIVE], texts)) return null;
+  if (matchesAny([DEV_INTENT], texts)) return null;
   if (technicalContext && technicalAction) return null;
   if (assistantDecision && technicalContext) return null;
 
-  if (DECLARATIVE.some(r => r.test(p))) return 'إعلان نية';
-  if (TEAM_DECISION.test(p) || assistantDecision) return 'سؤال عن قرار';
-  if (INTERROGATIVE.some(r => r.test(p))) return 'سؤال عن قرار';
-  if (VOCAB.test(stripCode(p)) && p.length < 400) return 'مفردات قرار';
+  if (matchesAny(DECLARATIVE, texts)) return 'إعلان نية';
+  if (matchesAny([TEAM_DECISION], texts) || assistantDecision) return 'سؤال عن قرار';
+  if (matchesAny(INTERROGATIVE, texts)) return 'سؤال عن قرار';
+  if (strippedTexts.some(text => matchesAny([VOCAB], [text])) && p.length < 400) return 'مفردات قرار';
   return null;
 }
 
