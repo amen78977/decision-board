@@ -28,12 +28,16 @@ fi
 for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json hooks/hooks.json \
          hooks/decision-detector.js scripts/validate.sh scripts/smoke.sh scripts/doctor.sh scripts/check-links.js \
          scripts/full-plugin-test.sh scripts/universal-contract.test.js \
-         standalone/UNIVERSAL.md standalone/UNIVERSAL.ar.md docs/ADAPTERS.md; do
+         standalone/UNIVERSAL.md standalone/UNIVERSAL.ar.md docs/ADAPTERS.md docs/RUNTIME.md \
+         core/package.json core/src/runtime.js core/src/clarification.js core/src/validation.js core/src/providers.js \
+         core/test/core.test.js core/test/providers.test.js core/benchmark/runner.js \
+         core/schemas/neutral-packet.schema.json core/schemas/role-output.schema.json \
+         core/schemas/clarification.schema.json core/schemas/clarification-batch.schema.json; do
   [ -r "$f" ] && ok "ملف موجود: $f" || err "ملف مفقود أو غير قابل للقراءة: $f"
 done
 
 if command -v node >/dev/null 2>&1; then
-  for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json hooks/hooks.json; do
+  for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json hooks/hooks.json core/package.json core/schemas/*.json; do
     node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" >/dev/null 2>&1 \
       && ok "JSON صالح: $f" || err "JSON غير صالح: $f"
   done
@@ -45,6 +49,12 @@ if command -v node >/dev/null 2>&1; then
     && ok 'الروابط المحلية سليمة' || err 'يوجد رابط Markdown محلي مكسور.'
   node scripts/universal-contract.test.js >/dev/null 2>&1 \
     && ok 'عقد المحول العالمي سليم' || err 'اختبار عقد المحول العالمي فشل.'
+  node core/test/core.test.js >/dev/null 2>&1 \
+    && ok 'اختبار core سليم' || err 'اختبار core فشل.'
+  node core/test/providers.test.js >/dev/null 2>&1 \
+    && ok 'اختبار adapters سليم' || err 'اختبار adapters فشل.'
+  node core/benchmark/runner.js >/dev/null 2>&1 \
+    && ok 'benchmark سليم' || err 'benchmark فشل.'
   bash -n scripts/validate.sh scripts/smoke.sh scripts/doctor.sh scripts/full-plugin-test.sh \
     && ok 'صياغة السكربتات سليمة' || err 'يوجد خطأ صياغة في أحد السكربتات.'
 fi

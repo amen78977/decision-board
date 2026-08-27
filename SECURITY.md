@@ -2,7 +2,7 @@
 
 ## Scope
 
-Decision Board is a local-first Claude Code plugin and prompt system. The repository itself does not add telemetry, analytics, remote storage, or network calls. Claude Code and the selected model provider still process the prompt according to their own terms; do not paste credentials, secrets, personal identifiers, or confidential material unless you have permission to do so.
+Decision Board is a local-first Claude Code plugin, prompt system, and provider-neutral runtime. The repository itself does not add telemetry, analytics, remote storage, or network calls. The optional OpenAI and Anthropic adapters call a provider only when the host injects an SDK client and explicitly invokes the runtime; they do not read keys or make hidden requests. Claude Code and the selected model provider still process the prompt according to their own terms; do not paste credentials, secrets, personal identifiers, or confidential material unless you have permission to do so.
 
 The optional Pro service described in `docs/COMMERCIALIZATION.ar.md` is a future product boundary, not part of this repository. It must not be represented as already available, and it must require explicit opt-in before synchronising any decision content.
 
@@ -18,8 +18,15 @@ Only the latest tagged release and the default branch receive security fixes. Be
 
 | Version line | Status |
 |---|---|
-| `0.7.x` | Supported |
-| `<0.7.0` | Upgrade recommended |
+| `0.10.x` | Supported |
+| `0.9.x` | Upgrade recommended |
+| `<0.9.0` | Unsupported; upgrade required |
+
+## Runtime data boundary
+
+The clarification runtime treats answers as untrusted data. It accepts known question ids only, removes control characters, limits answer length, and rebuilds a neutral packet before analysis. It does not treat a user answer as verified evidence. Hosts must not concatenate the original prompt, diagnostic notes, or raw answer objects into role inputs. A provider response containing contamination must stop the run rather than be repaired by an instruction to ignore it.
+
+If a host enables a provider adapter, the host owns API keys, consent, retention, retries, model selection, and network access. Keep keys in environment or a secret manager, never in this repository, benchmark fixtures, logs, or journal entries. A real provider smoke test must be run only with an intentionally configured account and must not be described as a local or no-network test.
 
 ## Safety boundaries
 

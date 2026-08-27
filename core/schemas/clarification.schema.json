@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/amen78977/decision-board/blob/main/core/schemas/clarification.schema.json",
+  "title": "Decision Board Clarification Question",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "question", "why_it_matters", "answer_type", "required"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]{2,48}$" },
+    "question": { "type": "string", "minLength": 8 },
+    "why_it_matters": { "type": "string", "minLength": 8 },
+    "answer_type": { "type": "string", "enum": ["text", "number", "boolean", "choice", "date"] },
+    "choices": { "type": "array", "maxItems": 8, "items": { "type": "string", "minLength": 1 } },
+    "required": { "type": "boolean" },
+    "sensitivity": { "type": "string", "enum": ["normal", "sensitive"] }
+  }
+}

@@ -14,7 +14,7 @@ for d in .claude-plugin agents skills/decision-board commands standalone evals s
 done
 for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json \
          "$S" commands/decide.md commands/review.md "$C" "$A" PROTOCOL.md \
-         standalone/UNIVERSAL.md standalone/UNIVERSAL.ar.md docs/ADAPTERS.md \
+         standalone/UNIVERSAL.md standalone/UNIVERSAL.ar.md docs/ADAPTERS.md docs/RUNTIME.md \
          scripts/doctor.sh scripts/check-links.js scripts/full-plugin-test.sh scripts/universal-contract.test.js SECURITY.md CONTRIBUTING.md \
          hooks/detector.integration.test.js; do
   [ -f "$f" ] && ok "ملف $f" || err "ملف مفقود: $f"
@@ -309,6 +309,34 @@ grep -q 'node-version: \[18.x, 20.x, 22.x\]' .github/workflows/validate.yml \
   && ok "CI يختبر Node.js 18 و20 و22" \
   || err "CI لا يختبر مصفوفة Node.js المدعومة"
 
-echo
+echo "── ٢١. runtime المحايد والـschemas والـbenchmark ──"
+for d in core core/src core/schemas core/test core/benchmark; do
+  [ -d "$d" ] && ok "مجلد $d" || err "مجلد core مفقود: $d"
+done
+for f in core/package.json core/src/index.js core/src/runtime.js core/src/clarification.js core/src/validation.js core/src/providers.js \
+         core/test/core.test.js core/test/providers.test.js core/benchmark/runner.js \
+         core/schemas/neutral-packet.schema.json core/schemas/role-output.schema.json \
+         core/schemas/clarification.schema.json core/schemas/clarification-batch.schema.json; do
+  [ -s "$f" ] && ok "core file $f" || err "core file مفقود أو فارغ: $f"
+done
+for f in core/package.json core/schemas/*.json; do
+  node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" 2>/dev/null \
+    && ok "core JSON صالح: $f" || err "core JSON تالف: $f"
+done
+for f in core/src/*.js core/test/*.js core/benchmark/*.js; do
+  node --check "$f" 2>/dev/null && ok "صياغة سليمة: $f" || err "خطأ صياغة: $f"
+done
+node core/test/core.test.js >/dev/null 2>&1 \
+  && ok "اختبار core يمر" || err "اختبار core فشل"
+node core/test/providers.test.js >/dev/null 2>&1 \
+  && ok "اختبار adapters يمر" || err "اختبار adapters فشل"
+node core/benchmark/runner.js >/dev/null 2>&1 \
+  && ok "benchmark يمر" || err "benchmark فشل"
+check "ج١٧ حالة الاستيضاح" 'ج١٧' PROTOCOL.md "$S" "$A" "$C" agents/diagnostician.md standalone/UNIVERSAL.ar.md
+check "ج١٧ clarification gate" 'Clarification gate' standalone/UNIVERSAL.md
+check "ج١٧ clarification lifecycle" 'Clarification lifecycle' docs/ADAPTERS.md
+check "حالة الاستيضاح" 'clarification_status' docs/ADAPTERS.md standalone/UNIVERSAL.md core/src/runtime.js core/schemas/clarification-batch.schema.json
+
+ echo
 [ "$fail" -eq 0 ] && echo "🟢 نجح الفحص" || echo "🔴 فشل الفحص"
 exit $fail

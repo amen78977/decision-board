@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/amen78977/decision-board/blob/main/core/schemas/neutral-packet.schema.json",
+  "title": "Decision Board Neutral Packet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["decision", "options", "facts", "constraints", "resources_and_capabilities", "depth", "language"],
+  "properties": {
+    "decision": { "type": "string", "minLength": 1 },
+    "options": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "text"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "maxLength": 8 },
+          "text": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "facts": { "type": "array", "items": { "type": "string" } },
+    "constraints": { "type": "array", "items": { "type": "string" } },
+    "resources_and_capabilities": { "type": "array", "items": { "type": "string" } },
+    "depth": { "type": "integer", "enum": [2, 3] },
+    "language": { "type": "string", "pattern": "^[a-z]{2}(?:-[A-Z]{2})?$" }
+  }
+}

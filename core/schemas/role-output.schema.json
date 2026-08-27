@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/amen78977/decision-board/blob/main/core/schemas/role-output.schema.json",
+  "title": "Decision Board Role Output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["role", "status"],
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": ["diagnostician", "verifier", "advocate", "opponent", "executor", "arbiter"]
+    },
+    "status": { "type": "string", "enum": ["ok", "contaminated", "failed", "unavailable"] },
+    "contaminated_input": { "type": "boolean" },
+    "output": { "type": ["object", "string", "null"] },
+    "error": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "contaminated" } } },
+      "then": { "required": ["contaminated_input"] }
+    },
+    {
+      "if": { "properties": { "status": { "enum": ["failed", "unavailable"] } } },
+      "then": { "required": ["error"] }
+    }
+  ]
+}

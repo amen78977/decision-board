@@ -1,0 +1,17 @@
+{
+  "name": "@decision-board/core",
+  "version": "0.2.0",
+  "description": "Provider-neutral runtime, clarification contracts, JSON Schemas, and orchestration for Decision Board agents.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "test": "node test/core.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
