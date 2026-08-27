@@ -15,7 +15,12 @@ printf '%s\n' "المسار: $ROOT"
 
 if command -v node >/dev/null 2>&1; then
   node_version=$(node --version)
-  ok "Node متاح: $node_version"
+  node_major=$(node -p "process.versions.node.split('.')[0]")
+  if [ "$node_major" -ge 18 ]; then
+    ok "Node متاح ومدعوم: $node_version"
+  else
+    err "Node قديم: $node_version — الحد الأدنى المطلوب 18."
+  fi
 else
   err 'Node.js مفقود — مطلوب لتشغيل hook واختبار الكاشف.'
 fi

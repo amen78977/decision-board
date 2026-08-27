@@ -287,6 +287,9 @@ node --check scripts/check-links.js 2>/dev/null && node scripts/check-links.js >
 [ -s .github/workflows/validate.yml ] && grep -q 'contents: read' .github/workflows/validate.yml \
   && ok "CI بصلاحيات قراءة فقط" \
   || err "CI لا يقيّد صلاحياته إلى القراءة"
+grep -q 'node-version: \[18.x, 20.x, 22.x\]' .github/workflows/validate.yml \
+  && ok "CI يختبر Node.js 18 و20 و22" \
+  || err "CI لا يختبر مصفوفة Node.js المدعومة"
 
 echo
 [ "$fail" -eq 0 ] && echo "🟢 نجح الفحص" || echo "🔴 فشل الفحص"
