@@ -64,6 +64,13 @@ const VOCAB = new RegExp([
  */
 const WORK_DIRECTIVE = /(?:قم\s+ب|قومي\s+ب|أعطيك|اعطيك|سأعطيك|ساعطيك|أمنحك|امنحك|الصلاحي|صلاحية|فوّضتك|فوضتك|انتهِ\s+من|انته\s+من|أكمل\s+العمل|اكمل\s+العمل|go ahead and|you have (?:full )?(?:permission|authority)|i(?:'m| am) giving you)/i;
 
+/**
+ * طلب صريح لغرفة العمليات (ج١٨) — وضع بناء حل له مهارته وأمره.
+ * بلا هذا، «/war-room سأترك وظيفتي وأريد خطة انتقال» يحقن تذكير
+ * الطاولة فيتنازع وضعان على الرسالة نفسها. الطلب الصريح يحسم الوضع.
+ */
+const WAR_ROOM = /(?:\/war-room|war[\s-]?room|غرفة\s+(?:ال)?عمليات|قاعة\s+(?:ال)?عمليات)/i;
+
 // استعلام معرفي — لا قرار
 const EXCLUDE = /(?:أي مكتبة|which library|أي framework|ما الفرق بين|what'?s the difference|اشرح|explain|كيف أكتب|how do i (?:write|implement)|ما معنى|what does .{1,30} mean|(?:^|\s)عرّف(?:\s|$)|(?:^|\s)define(?:\s|$))/i;
 
@@ -166,6 +173,7 @@ function detect(prompt) {
   const technicalAction = matchesAny([TECHNICAL_ACTION], texts);
 
   // الاستبعاد قبل الإيجاب — انظر ملاحظة الصيانة ٣
+  if (matchesAny([WAR_ROOM], texts)) return null;
   if (matchesAny([EXCLUDE], texts)) return null;
   if (matchesAny([DEV_IMPERATIVE], texts)) return null;
   if (matchesAny([ASSISTANT_REQUEST], texts) && !assistantDecision) return null;

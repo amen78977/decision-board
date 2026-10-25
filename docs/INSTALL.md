@@ -32,12 +32,12 @@ claude
 ```bash
 claude plugin marketplace add ./
 claude plugin install decision-board@decision-board
-claude plugin details decision-board   # يجب أن يظهر Agents (6) و Skills (3) و Hooks (1)
+claude plugin details decision-board   # يجب أن يظهر Agents (6) و Skills (4) و Hooks (1)
 ```
 
 تحقق: `/plugin` ثم تبويب Installed · وللوكلاء: `/agents`
 
-جرّب: `/decide هل أوظّف أول موظف الآن؟`
+جرّب: `/decide هل أوظّف أول موظف الآن؟` · ولبناء حل: `/war-room أريد خفض وقت الرد على العملاء إلى ساعة`
 
 ---
 

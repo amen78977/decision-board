@@ -14,6 +14,7 @@ for d in .claude-plugin agents skills/decision-board commands standalone evals s
 done
 for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json \
          "$S" commands/decide.md commands/review.md "$C" "$A" PROTOCOL.md \
+         skills/war-room/SKILL.md standalone/WAR-ROOM.md \
          standalone/UNIVERSAL.md standalone/UNIVERSAL.ar.md docs/ADAPTERS.md docs/RUNTIME.md \
          scripts/doctor.sh scripts/check-links.js scripts/full-plugin-test.sh scripts/universal-contract.test.js SECURITY.md CONTRIBUTING.md \
          hooks/detector.integration.test.js; do
@@ -169,7 +170,7 @@ esac
 echo "── ١٢. حالات التقييم ──"
 for c in 01-trivial 02-bad-decision 03-solid-decision 04-hyped-framing \
          05-journal-real-decision 06-journal-refuses-intent \
-         07-unverified-fact 08-fabricated-baserate; do
+         07-unverified-fact 08-fabricated-baserate 09-war-room; do
   { [ -s "evals/$c/prompt.md" ] && [ -s "evals/$c/graders/criteria.md" ]; } && ok "حالة $c" || err "حالة ناقصة: evals/$c"
 done
 
@@ -240,7 +241,7 @@ if [ -f scripts/smoke.sh ]; then
   bash -n scripts/smoke.sh scripts/doctor.sh scripts/full-plugin-test.sh 2>/dev/null && ok "صياغة smoke.sh وdoctor.sh وfull-plugin-test.sh سليمة" || err "scripts: خطأ صياغة"
   n=$(grep -c '^run [A-Z]-' scripts/smoke.sh)
   [ "$n" -ge 6 ] && ok "يغطي $n حالات سلوكية" || err "smoke.sh يغطي $n فقط — طبقة الإثبات بلا اختبار سلوكي"
-  grep -q 'Agents (6)' scripts/smoke.sh && grep -q 'Skills (3)' scripts/smoke.sh && grep -q 'Hooks (1)' scripts/smoke.sh \
+  grep -q 'Agents (6)' scripts/smoke.sh && grep -q 'Skills (4)' scripts/smoke.sh && grep -q 'Hooks (1)' scripts/smoke.sh \
     && ok "الفحص المسبق يتوقع ٦ وكلاء و٣ مهارات وhook" \
     || err "smoke.sh: الفحص المسبق لا يتحقق من مكونات الإضافة كاملة"
   for fn in numeric_conf flags_unverified no_fabricated_stat; do
@@ -287,7 +288,7 @@ market_version=$(node -e "process.stdout.write(JSON.parse(require('fs').readFile
 entry_version=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('.claude-plugin/marketplace.json','utf8')).plugins[0].version)")
 [ "$plugin_version" = "$market_version" ] && ok "إصدار plugin.json يطابق إصدار marketplace" || err "إصدار plugin.json ($plugin_version) لا يطابق marketplace ($market_version)"
 [ "$plugin_version" = "$entry_version" ] && ok "إصدار سجل الإضافة يطابق manifest" || err "إصدار سجل الإضافة ($entry_version) لا يطابق manifest ($plugin_version)"
-grep -q 'Agents (6)' docs/INSTALL.md && grep -q 'Skills (3)' docs/INSTALL.md && grep -q 'Hooks (1)' docs/INSTALL.md \
+grep -q 'Agents (6)' docs/INSTALL.md && grep -q 'Skills (4)' docs/INSTALL.md && grep -q 'Hooks (1)' docs/INSTALL.md \
   && ok "دليل التثبيت يعلن ٦ وكلاء و٣ مهارات وhook" \
   || err "دليل التثبيت لا يطابق مكونات الإضافة"
 fences=$(grep -c '^```' docs/INSTALL.md)
@@ -342,6 +343,33 @@ check "ج١٧ حالة الاستيضاح" 'ج١٧' PROTOCOL.md "$S" "$A" "$C" a
 check "ج١٧ clarification gate" 'Clarification gate' standalone/UNIVERSAL.md
 check "ج١٧ clarification lifecycle" 'Clarification lifecycle' docs/ADAPTERS.md
 check "حالة الاستيضاح" 'clarification_status' docs/ADAPTERS.md standalone/UNIVERSAL.md core/src/runtime.js core/schemas/clarification-batch.schema.json
+
+echo "── ٢٢. غرفة العمليات (ج١٨) ──"
+W=skills/war-room/SKILL.md; WS=standalone/WAR-ROOM.md
+grep -q 'matchesAny(\[WAR_ROOM\]' hooks/decision-detector.js \
+  && ok "الكاشف لا يحقن تذكير الطاولة على طلب غرفة العمليات" \
+  || err "الكاشف: «/war-room سأترك وظيفتي» تُفعّل الطاولة — تنازع وضعين على رسالة واحدة"
+grep -q '^name: war-room' "$W" && ok "war-room: name صحيح" || err "$W: name خاطئ أو مفقود"
+grep -q 'ج١٨' PROTOCOL.md && ok "PROTOCOL: ج١٨ معلنة" || err "PROTOCOL: ج١٨ مفقودة"
+check "ج١٨ الأعضاء الخمسة"     'المايسترو'              "$W" "$WS"
+check "ج١٨ محامي الشيطان"      'محامي الشيطان'          "$W" "$WS"
+check "ج١٨ الزبون الغبي"       'الزبون الغبي'           "$W" "$WS"
+check "ج١٨ العيب يُثبَت (ج٨)"   'ما_يُبطله'              "$W" "$WS"
+check "ج١٨ لا افتعال (ج٣)"     'أضعف ما وجدته'          "$W" "$WS"
+check "ج١٨ سجل العيوب"         'سجل العيوب القاتلة'     "$W" "$WS"
+check "ج١٨ إصدارات الخطة"      'v1'                     "$W" "$WS"
+check "ج١٨ شرط الإنهاء"        'جولتان'                 "$W" "$WS"
+check "ج١٨ العواقب الثانية"    'الدرجة الثانية'         "$W" "$WS"
+check "ج١٨ لا أرقام مخترعة"    'غير_متاح'               "$W" "$WS"
+check "ج١٨ لا انتحال"          'شخص'                    "$W" "$WS"
+check "ج١٨ سقف الثقة"          '0\.80'                 "$W" "$WS"
+check "ج١٨ سطر 📋"              '📋'                     "$W" "$WS"
+check "ج١٨ بوابة الهدف"        '٣–٦ أسئلة\|من ٣ إلى ٦' "$W" "$WS"
+grep -q '/decide' "$W" && ok "war-room يحيل القرار غير القابل للتراجع إلى /decide" || err "$W: لا إحالة إلى /decide — الغرفة تقرر بدل المستخدم (ج١٠)"
+grep -q 'war-room' skills/decision-board/SKILL.md \
+  && err "decision-board يذكر war-room — الوضعان يجب أن يبقيا منفصلين في المحفّزات" \
+  || ok "محفّزات الطاولة لا تتداخل مع غرفة العمليات"
+grep -q 'فقط' <(grep -A3 '^description:' "$W") && ok "war-room تُستدعى بالطلب الصريح فقط" || err "$W: الوصف لا يقيّد الاستدعاء بالطلب الصريح"
 
  echo
 [ "$fail" -eq 0 ] && echo "🟢 نجح الفحص" || echo "🔴 فشل الفحص"

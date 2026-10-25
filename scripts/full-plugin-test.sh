@@ -77,13 +77,13 @@ if command -v claude >/dev/null 2>&1; then
   claude_available=1
   details=$(claude plugin details decision-board 2>/dev/null || true)
   if grep -q 'Agents (6)' <<<"$details" && \
-     grep -q 'Skills (3)' <<<"$details" && \
+     grep -q 'Skills (4)' <<<"$details" && \
      grep -q 'Hooks (1)' <<<"$details"; then
-    ok 'installed-inventory: Agents (6), Skills (3), Hooks (1)'
+    ok 'installed-inventory: Agents (6), Skills (4), Hooks (1)'
   elif printf '%s' "$details" | grep -qiE 'not found|غير مثبت|No plugin'; then
     warn 'installed-inventory: البلَغن غير مثبت في HOME الحالي؛ تم التحقق من الحزمة المحلية فقط'
   elif [ -n "$details" ]; then
-    err 'installed-inventory: inventory لا يطابق Agents (6), Skills (3), Hooks (1)'
+    err 'installed-inventory: inventory لا يطابق Agents (6), Skills (4), Hooks (1)'
   else
     warn 'installed-inventory: البلَغن غير مثبت في HOME الحالي؛ تم التحقق من الحزمة المحلية فقط'
   fi
@@ -95,7 +95,7 @@ fi
 if [ "$claude_available" -eq 1 ] && \
    claude auth status 2>/dev/null | grep -q '"loggedIn": *true' && \
    grep -q 'Agents (6)' <<<"$details" && \
-   grep -q 'Skills (3)' <<<"$details" && \
+   grep -q 'Skills (4)' <<<"$details" && \
    grep -q 'Hooks (1)' <<<"$details"; then
   if bash scripts/smoke.sh "$OUT/live" >"$OUT/live.log" 2>&1; then
     ok 'live-smoke: نجح الاختبار السلوكي الحي'

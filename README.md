@@ -219,6 +219,14 @@ When a real decision is complete, keep the loop alive:
 
 This reviews due entries in `~/.claude/decision-board/JOURNAL.md`, records the outcome, and updates calibration without rewriting the confidence you gave before the result.
 
+### War room — when you need to *build* a solution, not choose between options
+
+```text
+/war-room raise mobile checkout completion in my small online store
+```
+
+A live, verbatim deliberation: the **Engineer** drafts plan v1; the **Devil's Advocate** and the **Dumb Customer** must reject it with a fatal flaw — backed by evidence and an observable falsifier, never invented; a **Specialist** chosen for your goal breaks it down to first principles and predicts second-order effects. The plan evolves through numbered versions and a flaw ledger over 2–4 rounds, then the silent **Maestro** speaks once to engineer the final, ready-to-execute solution. For a choice between known options, use `/decide` instead. Rules: R18 in [`PROTOCOL.md`](PROTOCOL.md) · paste-anywhere version: [`standalone/WAR-ROOM.md`](standalone/WAR-ROOM.md).
+
 ---
 
 ## Try to break it
@@ -322,9 +330,9 @@ Details in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · rules in [`PROTOCOL
 decision-board/
 ├── PROTOCOL.md            ← the single source of truth (16 rules, 3 layers)
 ├── agents/                ← the six roles
-├── skills/ · commands/    ← the skill and /decide
+├── skills/ · commands/    ← decision-board + war-room · /decide · /review · /war-room
 ├── hooks/                 ← the decision detector + its 80 unit tests
-├── standalone/            ← CHAT.md (any chat) · AGENT.md (self-installing)
+├── standalone/            ← CHAT.md (any chat) · AGENT.md (self-installing) · WAR-ROOM.md
 ├── scripts/               ← validate.sh (108 structural checks) · smoke.sh (behavioral)
 ├── evals/ · examples/     ← test cases and a full walkthrough
 ├── docs/DEMO.md           ← one real session, unedited, all six agents
