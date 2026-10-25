@@ -41,6 +41,26 @@ const CASES = [
   ["can't decide which path to take", 'سؤال عن قرار'],
 
   // ═══ يجب ألا تُفعّل — استعلام معرفي
+  // ═══ هدف يحتاج حلاً (ج١٨) — يُحقن تذكير غرفة العمليات والنموذج يقرر
+  ['كيف أرفع مبيعات متجري من الجوال؟ الزوار كثيرون والطلبات قليلة', 'هدف يحتاج حلاً'],
+  ['هدفي أن أضاعف عدد عملاء المقهى خلال ستة أشهر', 'هدف يحتاج حلاً'],
+  ['أريد أن أخفض تكاليف التوصيل في مطعمي إلى النصف', 'هدف يحتاج حلاً'],
+  ['أحتاج خطة لإنقاذ مشروعي بعد خسارة أكبر عميل', 'هدف يحتاج حلاً'],
+  ['How do I grow my newsletter from 500 to 5000 subscribers?', 'هدف يحتاج حلاً'],
+  ['My goal is to cut customer churn in half this year', 'هدف يحتاج حلاً'],
+  // القرار يغلب الهدف حين يجتمعان
+  ['كيف أرفع مبيعاتي؟ هل أخفض السعر أم أزيد الإعلانات؟', 'سؤال عن قرار'],
+  // هدف تقني أو معرفي — لا غرفة
+  ['كيف أحل هذا الخطأ في الدالة', null],
+  ['How do I reduce latency in this API endpoint', null],
+  ['how do i fix this bug in the parser', null],
+  ['اشرح لي كيف أرفع ترتيب موقعي في جوجل', null],
+
+  // ═══ غرفة العمليات (ج١٨) — الطلب الصريح يحسم الوضع ولا يُحقن تذكير الطاولة
+  ['/war-room سأترك وظيفتي وأريد خطة انتقال', null],
+  ['غرفة عمليات: قررت أطلق منتج جديد وأريد خطة الإطلاق', null],
+  ['افتح قاعة العمليات على هدفي: سأستثمر في مطعم', null],
+  ["war room: I've decided to launch, build me the plan", null],
   ['أي مكتبة أستخدم للتواريخ؟', null],
   ['اشرح لي كيف يعمل useEffect', null],
   ['ما الفرق بين map و forEach', null],
@@ -138,7 +158,15 @@ for (const [prompt, expected] of CASES) {
 
 // ═══ فحص بنية التذكير المحقون
 const sample = render('سؤال عن قرار');
-const STRUCTURE = [
+const goalSample = render('هدف يحتاج حلاً');
+const STRUCTURE_GOAL = [
+  ['تذكير الغرفة بوسمه', goalSample.indexOf('<war-room-trigger>') === 0 && goalSample.trim().endsWith('</war-room-trigger>')],
+  ['يسمّي مهارة الغرفة', goalSample.indexOf('war-room') !== -1],
+  ['النموذج يقرر بنفسه', goalSample.indexOf('بنفسك') !== -1],
+  ['يسمح بالرد المباشر للبسيط', goalSample.indexOf('أجب مباشرة') !== -1],
+  ['لا يحقن تذكير الطاولة', goalSample.indexOf('decision-board-trigger') === -1],
+];
+const STRUCTURE = [...STRUCTURE_GOAL,
   ['يفتح بالوسم', sample.indexOf('<decision-board-trigger>') === 0],
   ['يغلق بالوسم', sample.trim().endsWith('</decision-board-trigger>')],
   ['يذكر اسم المهارة', sample.indexOf('decision-board') !== -1],

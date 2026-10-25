@@ -24,6 +24,11 @@ const technical = run(JSON.stringify({ prompt: 'I have decided to run the migrat
 assert.strictEqual(technical.status, 0, 'technical prompt must exit cleanly');
 assert.strictEqual(technical.stdout, '', 'technical execution intent must stay silent');
 
+const goal = run(JSON.stringify({ prompt: 'How do I grow my newsletter from 500 to 5000 subscribers?' }));
+assert.strictEqual(goal.status, 0, 'goal prompt must exit cleanly');
+assert.match(goal.stdout, /<war-room-trigger>/, 'goal prompt must emit the war-room trigger');
+assert.doesNotMatch(goal.stdout, /<decision-board-trigger>/, 'goal prompt must not emit the board trigger');
+
 const malformed = run('not-json');
 assert.strictEqual(malformed.status, 0, 'malformed input must fail open');
 assert.strictEqual(malformed.stdout, '', 'malformed input must stay silent');
@@ -33,4 +38,4 @@ const wrongShape = run(JSON.stringify({ message: { content: 'Should I launch now
 assert.strictEqual(wrongShape.status, 0, 'unknown input shape must exit cleanly');
 assert.strictEqual(wrongShape.stdout, '', 'unknown input shape must stay silent');
 
-console.log('Hook integration: 4/4 scenarios passed');
+console.log('Hook integration: 5/5 scenarios passed');
