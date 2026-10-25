@@ -302,7 +302,7 @@ Details in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · rules in [`PROTOCOL
 
 - **Anonymization works, and by a lot.** [Anonymization for Bias-Reduced Multi-Agent Debate](https://arxiv.org/abs/2510.07517) measured the conformity–obstinacy gap dropping from **0.608 to 0.024** through anonymization alone — and found **sycophancy far more prevalent than self-bias**, in 18 of 20 cases.
 - **Sycophancy distorts multi-agent debate itself.** [Peacemaker or Troublemaker](https://arxiv.org/abs/2509.23055) — adding an opponent is not enough if the opponent can read the decider's leaning.
-- **Architecturally uniform swarms converge.** Hence the three lenses inside the opponent: angle diversity is what remains when model diversity is impossible.
+- **Architecturally uniform swarms converge.** Hence the four lenses inside the opponent: angle diversity is what remains when model diversity is impossible.
 - **Reference classes are the single technique most correlated with forecasting accuracy** in the competitive-forecasting literature. That is where rule 13 comes from.
 
 ---

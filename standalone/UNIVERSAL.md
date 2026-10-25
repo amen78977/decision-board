@@ -88,7 +88,7 @@ The sealed packet must remove emotional framing and preference signals without d
 
 **Advocate:** build the strongest case for the decision from the sealed packet only. Return `strongest_claim`, evidence, reference class, success conditions, cost of inaction, falsifier, and numeric confidence.
 
-**Opponent:** ignore all original phrasing and the advocate's output. Start with a one-year premortem, then inspect economic, human/political, and temporal lenses separately. Return the strongest real objection, fatal assumption, who pays, who can silently block, worst case, falsifier, and numeric confidence. If no material objection remains, say so explicitly.
+**Opponent:** ignore all original phrasing and the advocate's output. Start with a one-year premortem, then inspect economic, human/political, temporal, and behavioral lenses separately (behavioral: who must change their behavior for this to work, and at which step they quit or work around it). Then name the second-order consequence: if the path succeeds, who adapts against it and what changes in 6–12 months? Return the strongest real objection, fatal assumption, who pays, who can silently block, worst case, falsifier, and numeric confidence. If no material objection remains, say so explicitly.
 
 **Executor:** only at level 3. Assess feasibility, largest blocker, estimate basis, point of no return, first low-cost step, smallest viable version, falsifier, and numeric confidence.
 
@@ -110,12 +110,15 @@ B) ... — cost: ...
 🔍 Critical fact not established: ... — verify it by: ...
 ⚠️ What I may be wrong about: ...
 ❓ What you know and I do not that could reverse this: ...
+🚀 First step tomorrow: ...   [level 3]
+🛑 Reconsider if: ...   [the falsifier of the leading path]
+🔧 Untested patch: ... — say "improvement round" to test it   [level 3]
 🎯 Confidence: 0.XX — because ...
 
 📋 Reviewed by: [independent advocacy and opposition + fact check | independent advocacy and opposition + fact check + feasibility + ranking] — strongest unresolved objection: "..."
 ```
 
-Include `🔍` only when a critical fact is not established. The confidence line must contain a number. The transparency line must announce functions and never expose role names. If a role failed, state the missing function instead of hiding it.
+Include `🔍` only when a critical fact is not established. `🛑` is mandatory at levels 2 and 3; `🚀` and `🔧` are level 3 only, and `🔧` is always declared untested. On request ("improvement round"), add the arbiter's patch to the options of a fresh neutral packet — never labeled as improved or as an answer to an objection — rerun the same roles, and add `🔁 What changed after the improvement round: ...`. Two rounds at most. The confidence line must contain a number. The transparency line must announce functions and never expose role names. If a role failed, state the missing function instead of hiding it.
 
 ## Journal and review
 

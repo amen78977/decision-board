@@ -132,7 +132,7 @@ check "تناظر مُعلَن صراحةً" 'تناظر' "$S" "$A" PROTOCOL.md
 
 echo "── ٩. المعارض: تشريح الفشل والعدسات الثلاث ──"
 check "تشريح الفشل المسبق" 'تشريح_الفشل' agents/opponent.md "$S" "$A" "$C"
-for lens in 'العدسة_الاقتصادية' 'العدسة_البشرية_السياسية' 'العدسة_الزمنية'; do
+for lens in 'العدسة_الاقتصادية' 'العدسة_البشرية_السياسية' 'العدسة_الزمنية' 'العدسة_السلوكية'; do
   grep -q "$lens" agents/opponent.md && ok "عدسة $lens" || err "agents/opponent.md: $lens مفقودة"
 done
 
@@ -170,7 +170,7 @@ esac
 echo "── ١٢. حالات التقييم ──"
 for c in 01-trivial 02-bad-decision 03-solid-decision 04-hyped-framing \
          05-journal-real-decision 06-journal-refuses-intent \
-         07-unverified-fact 08-fabricated-baserate 09-war-room; do
+         07-unverified-fact 08-fabricated-baserate 09-war-room 10-improvement-round; do
   { [ -s "evals/$c/prompt.md" ] && [ -s "evals/$c/graders/criteria.md" ]; } && ok "حالة $c" || err "حالة ناقصة: evals/$c"
 done
 
@@ -370,6 +370,20 @@ grep -q 'war-room' skills/decision-board/SKILL.md \
   && err "decision-board يذكر war-room — الوضعان يجب أن يبقيا منفصلين في المحفّزات" \
   || ok "محفّزات الطاولة لا تتداخل مع غرفة العمليات"
 grep -q 'فقط' <(grep -A3 '^description:' "$W") && ok "war-room تُستدعى بالطلب الصريح فقط" || err "$W: الوصف لا يقيّد الاستدعاء بالطلب الصريح"
+
+echo "── ٢٣. ما استعارته الطاولة من غرفة العمليات (ج١٩) ──"
+before23=$fail
+grep -q 'ج١٩' PROTOCOL.md && ok "PROTOCOL: ج١٩ معلنة" || err "PROTOCOL: ج١٩ مفقودة"
+check "ج١٩ العدسة السلوكية"      'العدسة_السلوكية'       agents/opponent.md "$S" "$A" "$C"
+check "ج١٩ عاقبة الدرجة الثانية" 'عاقبة_الدرجة_الثانية'  agents/opponent.md "$S" "$A" "$C"
+check "ج١٩ الترقيع"              'أقوى_ترقيع'            agents/arbiter.md "$S" "$A" "$C"
+check "ج١٩ الترقيع غير مختبر"    'غير مختبر'             agents/arbiter.md "$S" "$A" "$C"
+check "ج١٩ جولة التحسين"         'جولة تحسين'            "$S" "$A" "$C" standalone/UNIVERSAL.ar.md
+check "ج١٩ improvement round"    'improvement round'     standalone/UNIVERSAL.md
+check "ج١٩ سطر 🛑"                '🛑'                     "$S" "$A" "$C" standalone/UNIVERSAL.md standalone/UNIVERSAL.ar.md
+check "ج١٩ سطر 🚀"                '🚀'                     "$S" "$A" "$C" standalone/UNIVERSAL.md standalone/UNIVERSAL.ar.md
+check "ج١٩ حزمة التحسين لا تُلوَّث" 'المُحسَّن'           "$S" "$A"
+[ "$fail" -eq "$before23" ] && ok "ج١٩ منشورة على الوكيلين والمشتقات"
 
  echo
 [ "$fail" -eq 0 ] && echo "🟢 نجح الفحص" || echo "🔴 فشل الفحص"
