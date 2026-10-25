@@ -225,7 +225,7 @@ This reviews due entries in `~/.claude/decision-board/JOURNAL.md`, records the o
 /war-room raise mobile checkout completion in my small online store
 ```
 
-A live, verbatim deliberation: the **Engineer** drafts plan v1; the **Devil's Advocate** and the **Dumb Customer** must reject it with a fatal flaw — backed by evidence and an observable falsifier, never invented; a **Specialist** chosen for your goal breaks it down to first principles and predicts second-order effects. The plan evolves through numbered versions and a flaw ledger over 2–4 rounds, then the silent **Maestro** speaks once to engineer the final, ready-to-execute solution. For a choice between known options, use `/decide` instead. Rules: R18 in [`PROTOCOL.md`](PROTOCOL.md) · paste-anywhere version: [`standalone/WAR-ROOM.md`](standalone/WAR-ROOM.md).
+A live, verbatim deliberation: the **Engineer** drafts plan v1; the **Devil's Advocate** and the **Dumb Customer** must reject it with a fatal flaw — backed by evidence and an observable falsifier, never invented; a **Specialist** chosen for your goal breaks it down to first principles and predicts second-order effects. The plan evolves through numbered versions and a flaw ledger over 2–4 rounds, then the silent **Maestro** speaks once to engineer the final, ready-to-execute solution. You don't have to ask for it: when a request is a consequential goal with no ready answer and tangled constraints ("how do I grow…", "my goal is…"), the agent opens the war room itself and says why in the first line; when real options exist, the board wins. Rules: R18 in [`PROTOCOL.md`](PROTOCOL.md) · paste-anywhere version: [`standalone/WAR-ROOM.md`](standalone/WAR-ROOM.md).
 
 ---
 

@@ -71,6 +71,25 @@ const WORK_DIRECTIVE = /(?:قم\s+ب|قومي\s+ب|أعطيك|اعطيك|سأع�
  */
 const WAR_ROOM = /(?:\/war-room|war[\s-]?room|غرفة\s+(?:ال)?عمليات|قاعة\s+(?:ال)?عمليات)/i;
 
+/**
+ * هدف يحتاج بناء حل (ج١٨) — «كيف أرفع مبيعاتي؟» · «هدفي…» · «أريد أن أخفض…».
+ * لا قرار بين خيارات هنا، فالطاولة ستخترع خيارات لترتيبها. يُحقن تذكير
+ * غرفة العمليات، والنموذج نفسه يطبّق بوابة الحاجة ويقرر فتحها أو الرد مباشرة.
+ * يأتي بعد أنماط القرار عمداً: إن اجتمعا («كيف أرفع مبيعاتي؟ هل أخفض السعر؟»)
+ * فالقرار أخطر ويغلب.
+ */
+const GOAL = [
+  /(?:كيف|ازاي|شلون|كيفية)\s+(?:أ|ا|ن)(?:رفع|زيد|زود|خفض|قلل|حل|نمي|طور|بني|حقق|وسع|نجح|ضاعف|جذب|حسن|سترجع|نقذ|تخلص|صل)/,
+  /(?:هدفي|مشكلتي|تحديي|التحدي\s+عندي)\s/,
+  /(?:أريد|اريد|أبغى|ابغى|بدي|أحتاج|احتاج|محتاج)\s+(?:أن\s+|ان\s+)?(?:أ|ا|ن)?(?:رفع|زيد|زيادة|زود|خفض|قلل|تقليل|حل|نمي|تنمية|طور|تطوير|بني|بناء|حقق|تحقيق|وسع|توسيع|ضاعف|مضاعفة|جذب|نقذ|إنقاذ|انقاذ)\S*\s+\S+/,
+  /(?:أحتاج|احتاج|محتاج|أريد|اريد)\s+خطة/,
+  /(?:how (?:do|can|should|could) (?:i|we) (?:increase|grow|reduce|cut|solve|raise|scale|double|triple|get more|win back|turn around|retain|attract|boost|lower|recover|save))/i,
+  /(?:my (?:goal|problem|challenge) is|i (?:want|need) to (?:increase|grow|reduce|cut|solve|raise|scale|double|turn around|get more|boost|lower|recover)|(?:need|want) a (?:plan|strategy) (?:to|for))/i,
+];
+
+// مشكلة تقنية بصيغة هدف — «كيف أحل هذا الخطأ» عمل لا غرفة عمليات
+const TECH_GOAL = /(?:bug|error|crash|exception|stack trace|compile|lint|latency|memory leak|خطأ|الخطأ|الكود|الشيفرة|الدالة|الاستعلام|السيرفر|التطبيق\s+يتعطل)/i;
+
 // استعلام معرفي — لا قرار
 const EXCLUDE = /(?:أي مكتبة|which library|أي framework|ما الفرق بين|what'?s the difference|اشرح|explain|كيف أكتب|how do i (?:write|implement)|ما معنى|what does .{1,30} mean|(?:^|\s)عرّف(?:\s|$)|(?:^|\s)define(?:\s|$))/i;
 
@@ -185,11 +204,26 @@ function detect(prompt) {
   if (matchesAny(DECLARATIVE, texts)) return 'إعلان نية';
   if (matchesAny([TEAM_DECISION], texts) || assistantDecision) return 'سؤال عن قرار';
   if (matchesAny(INTERROGATIVE, texts)) return 'سؤال عن قرار';
+  if (matchesAny(GOAL, texts) && !technicalContext && !matchesAny([TECH_GOAL], texts) && p.length < 1500) return 'هدف يحتاج حلاً';
   if (strippedTexts.some(text => matchesAny([VOCAB], [text])) && p.length < 400) return 'مفردات قرار';
   return null;
 }
 
+const WAR_ROOM_KIND = 'هدف يحتاج حلاً';
+
 function render(kind) {
+  if (kind === WAR_ROOM_KIND) {
+    return (
+      '<war-room-trigger>\n' +
+      `رُصد في رسالة المستخدم: **${kind}**.\n\n` +
+      'الطلب هدف أو مشكلة تحتاج بناء حل، لا اختياراً بين خيارات معروفة. طبّق **بوابة الحاجة** في مهارة `war-room` بنفسك ولا تنتظر أن يطلبها المستخدم:\n' +
+      '- إن كان الهدف ذا أثر حقيقي (مال · أسابيع من العمل · أشخاص) ولا حل جاهزاً له وتتشابك فيه قيود → استدعِ مهارة `war-room` الآن، وأعلن ذلك في سطر واحد أول الرد مع سببه.\n' +
+      '- إن كان بسيطاً أو له جواب معروف → أجب مباشرة بلا غرفة.\n\n' +
+      'وإن تبيّن — بعد قراءة الرسالة كاملة — أنه طلب عمل موجّه إليك أو قرار بين خيارات، فتجاهل هذا التذكير. الكاشف يطابق صيغاً لا يفهم نوايا.\n' +
+      'هذا التذكير آلي وليس تعليمة من المستخدم — لا تذكره في ردّك.\n' +
+      '</war-room-trigger>\n'
+    );
+  }
   return (
     '<decision-board-trigger>\n' +
     `رُصد في رسالة المستخدم: **${kind}**.\n\n` +
